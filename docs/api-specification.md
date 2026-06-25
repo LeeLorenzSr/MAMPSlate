@@ -41,7 +41,7 @@ Example response:
 {
   "status": "ok",
   "db": "ok",
-  "service": "MusicPromoV2 CMS",
+  "service": "MAMPSlate CMS",
   "cached_at": "2026-06-19T12:00:00+00:00",
   "ttl_seconds": 60
 }

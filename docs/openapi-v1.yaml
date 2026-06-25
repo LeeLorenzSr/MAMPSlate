@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
-  title: MusicPromoV2 CMS API
+  title: MAMPSlate CMS API
   version: "1.0"
   description: |
-    Versioned JSON API for the MusicPromoV2 CMS. Authenticate with a bearer API key
+    Versioned JSON API for the MAMPSlate CMS. Authenticate with a bearer API key
     (`Authorization: Bearer <api_key>`) or temporal session key
     (`Authorization: Session <session_key>`). See docs/api-v1.md.
 servers:

@@ -6,7 +6,7 @@ require_once dirname(__DIR__) . '/includes/bootstrap.php';
 requireFeature('rss_feed');
 
 $baseUrl = rtrim($config['app']['base_url'] ?? '', '/');
-$appName = $config['app']['name'] ?? 'MusicPromoV2 CMS';
+$appName = $config['app']['name'] ?? 'MAMPSlate CMS';
 $items = $articles->listPublished(1, 20, null, null);
 
 security_headers();

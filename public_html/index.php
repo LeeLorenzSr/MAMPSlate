@@ -19,7 +19,7 @@ renderHeader('Home', $currentUser, [
     'jsonLd' => [
         '@context' => 'https://schema.org',
         '@type' => 'WebSite',
-        'name' => $config['app']['name'] ?? 'MusicPromoV2 CMS',
+        'name' => $config['app']['name'] ?? 'MAMPSlate CMS',
         'url' => rtrim($config['app']['base_url'] ?? '', '/'),
     ],
 ]);

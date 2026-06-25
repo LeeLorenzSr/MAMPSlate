@@ -197,7 +197,7 @@ final class CmsMcpTools
         } catch (Throwable $e) {
         }
         return [
-            'service' => setting('site.name', 'MusicPromoV2 CMS'),
+            'service' => setting('site.name', 'MAMPSlate CMS'),
             'db' => $dbOk ? 'ok' : 'error',
             'mcp' => ['enabled' => true, 'dry_run' => $ctx['dryRun']],
             'features' => [

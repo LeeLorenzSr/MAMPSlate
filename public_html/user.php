@@ -61,7 +61,7 @@ if (feature('articles')) {
 
 $seoDescription = $user['bio'] !== null && $user['bio'] !== ''
     ? $user['bio']
-    : $user['display_name'] . ' on ' . setting('site.name', $config['app']['name'] ?? 'MusicPromoV2 CMS');
+    : $user['display_name'] . ' on ' . setting('site.name', $config['app']['name'] ?? 'MAMPSlate CMS');
 
 renderHeader(
     $user['display_name'],

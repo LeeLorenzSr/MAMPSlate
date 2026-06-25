@@ -25,7 +25,7 @@ final class Mailer
     public function send(string $to, string $subject, string $htmlBody): void
     {
         $fromAddress = $this->config['from_address'] ?? 'no-reply@example.com';
-        $fromName = $this->config['from_name'] ?? 'MusicPromoV2 CMS';
+        $fromName = $this->config['from_name'] ?? 'MAMPSlate CMS';
         $mode = $this->config['mode'] ?? 'log';
 
         if ($mode === 'log') {

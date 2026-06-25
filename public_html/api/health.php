@@ -53,7 +53,7 @@ try {
 $payload = [
     'status' => $dbOk ? 'ok' : 'degraded',
     'db' => $dbOk ? 'ok' : 'error',
-    'service' => $config['app']['name'] ?? 'MusicPromoV2 CMS',
+    'service' => $config['app']['name'] ?? 'MAMPSlate CMS',
     'cached_at' => date('c'),
     'ttl_seconds' => $ttl,
 ];

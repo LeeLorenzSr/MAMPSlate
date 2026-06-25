@@ -4,7 +4,7 @@ declare(strict_types=1);
 function renderHeader(string $title, ?array $user = null, ?array $seo = null): void
 {
     $config = $GLOBALS['config'] ?? [];
-    $appName = setting('site.name', $config['app']['name'] ?? 'MusicPromoV2 CMS');
+    $appName = setting('site.name', $config['app']['name'] ?? 'MAMPSlate CMS');
     $baseUrl = rtrim(setting('app.base_url', $config['app']['base_url'] ?? ''), '/');
     $defaultDescription = setting('default_meta_description', $config['app']['default_meta_description'] ?? '');
     $seo = $seo ?? [];
@@ -231,7 +231,7 @@ function renderAuthModal(): void
 function renderFooter(): void
 {
     $nonce = $GLOBALS['csp_nonce'] ?? csp_nonce();
-    $appName = setting('site.name', $GLOBALS['config']['app']['name'] ?? 'MusicPromoV2 CMS');
+    $appName = setting('site.name', $GLOBALS['config']['app']['name'] ?? 'MAMPSlate CMS');
     $footerMenu = $GLOBALS['menus']?->itemsForLocation('footer') ?? [];
     ?>
 </main>

@@ -53,7 +53,7 @@ final class McpServer
                 McpResponse::result($request->id, [
                     'protocolVersion' => '2024-11-05',
                     'capabilities' => ['tools' => (object)[]],
-                    'serverInfo' => ['name' => 'MusicPromoV2 MCP', 'version' => '1.0'],
+                    'serverInfo' => ['name' => 'MAMPSlate MCP', 'version' => '1.0'],
                 ]);
 
             case 'tools/list':

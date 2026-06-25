@@ -1,4 +1,4 @@
-# MusicPromoV2 CMS
+# MAMPSlate CMS
 
 A small, dependency-free PHP/MySQL base CMS for MAMP/LAMP. Designed to be copied
 into a new project and specialized — not forked. Server-rendered pages, PDO

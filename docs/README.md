@@ -1,4 +1,4 @@
-# MusicPromoV2 CMS Documentation
+# MAMPSlate CMS Documentation
 
 This folder contains the specifications and operating notes for a generic
 PHP/MySQL CMS hosted on Apache, MySQL, and PHP (MAMP/LAMP). It is intended as a
