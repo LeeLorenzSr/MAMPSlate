@@ -186,7 +186,7 @@ final class OAuthClient
     {
         $headers = ['Authorization: Bearer ' . $accessToken, 'Accept: application/json'];
         if ($github) {
-            $headers[] = 'User-Agent: MusicPromoV2-OAuth';
+            $headers[] = 'User-Agent: MAMPSlate-OAuth';
         }
         $raw = $this->request('GET', $url, $headers);
         $data = json_decode($raw, true);

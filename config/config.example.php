@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 return [
     'app' => [
-        'name' => 'MusicPromoV2 CMS',
+        'name' => 'MAMPSlate CMS',
         'env' => 'local',
         'base_url' => 'http://localhost',
-        'session_name' => 'musicpromo_session',
+        'session_name' => 'mampslate_session',
         'session_lifetime_minutes' => 120,
         'api_session_lifetime_minutes' => 60,
         'allow_signup' => true,
@@ -24,8 +24,8 @@ return [
     'database' => [
         'host' => '127.0.0.1',
         'port' => 3306,
-        'name' => 'musicpromov2',
-        'user' => 'musicpromov2_user',
+        'name' => 'mampslate',
+        'user' => 'mampslate_user',
         'password' => 'replace-me',
         'charset' => 'utf8mb4',
     ],
@@ -43,7 +43,7 @@ return [
         // 'log' (dev), 'mail' (PHP mail()), 'smtp' (reserved).
         'mode' => 'log',
         'from_address' => 'no-reply@example.com',
-        'from_name' => 'MusicPromoV2 CMS',
+        'from_name' => 'MAMPSlate CMS',
     ],
     'rate_limits' => [
         'login'      => ['max' => 10, 'window' => 60],     // per IP, per minute

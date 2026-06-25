@@ -24,7 +24,7 @@ require_once APP_ROOT . '/includes/security.php';
 require_once APP_ROOT . '/includes/Database.php';
 require_once APP_ROOT . '/includes/MigrationRunner.php';
 
-session_name('musicpromo_setup');
+session_name('mampslate_setup');
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
@@ -70,7 +70,7 @@ function setup_db_fields(): array
     $defaults = [
         'host' => '127.0.0.1',
         'port' => 3306,
-        'name' => 'musicpromov2',
+        'name' => 'mampslate',
         'user' => '',
         'password' => '',
     ];
@@ -318,7 +318,7 @@ $baseUrl = detect_base_url();
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Setup | MusicPromoV2 CMS</title>
+    <title>Setup | MAMPSlate CMS</title>
     <link rel="stylesheet" href="/assets/site.css">
     <style>
         .setup-wrap { max-width: 720px; margin: 32px auto; padding: 0 16px; }
@@ -335,7 +335,7 @@ $baseUrl = detect_base_url();
 </head>
 <body>
 <header class="site-header">
-    <a class="brand" href="/">MusicPromoV2 CMS</a>
+    <a class="brand" href="/">MAMPSlate CMS</a>
     <div class="header-right"><span class="muted">First-run setup</span></div>
 </header>
 <main class="page setup-wrap">
