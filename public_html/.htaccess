@@ -1,0 +1,32 @@
+Options -Indexes
+
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Canonical: redirect direct /foo.php requests to /foo (GET only, skip /api and any index).
+    RewriteCond %{THE_REQUEST} ^GET\s/([a-zA-Z0-9_/\-]+)\.php[\s?] [NC]
+    RewriteCond %1 !^api/ [NC]
+    RewriteCond %1 !^(.*/)?index$ [NC]
+    RewriteRule ^ /%1 [R=301,L]
+
+    # Content routes
+    RewriteRule ^articles$                articles.php [L]
+    RewriteRule ^articles/([a-z0-9-]+)$   article.php?slug=$1 [L]
+    RewriteRule ^pages/([a-z0-9-]+)$      page.php?slug=$1 [L]
+    RewriteRule ^user/([a-z0-9-]+)$       user.php?slug=$1 [QSA,L]
+    RewriteRule ^category/([a-z0-9-]+)$   articles.php?category=$1 [L]
+    RewriteRule ^tag/([a-z0-9-]+)$        articles.php?tag=$1 [L]
+    RewriteRule ^search$                  search.php [L]
+
+    # SEO endpoints
+    RewriteRule ^sitemap\.xml$            sitemap.php [L]
+    RewriteRule ^robots\.txt$             robots.php [L]
+    RewriteRule ^feed$                    feed.php [L]
+
+    # Extensionless: /foo -> /foo.php when foo.php exists and foo is not a directory.
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^(.+)$ $1.php [L]
+</IfModule>

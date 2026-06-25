@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: MusicPromoV2 CMS API
+  version: "1.0"
+  description: |
+    Versioned JSON API for the MusicPromoV2 CMS. Authenticate with a bearer API key
+    (`Authorization: Bearer <api_key>`) or temporal session key
+    (`Authorization: Session <session_key>`). See docs/api-v1.md.
+servers:
+  - url: /api/v1
+components:
+  securitySchemes:
+    bearerKey:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: "Bearer <api_key> or Session <session_key>"
+  schemas:
+    Error:
+      type: object
+      properties:
+        ok: { type: boolean, example: false }
+        error: { type: string }
+        message: { type: string }
+    Pagination:
+      type: object
+      properties:
+        page: { type: integer }
+        per_page: { type: integer }
+        total: { type: integer }
+        total_pages: { type: integer }
+    ArticleAuthor:
+      type: object
+      description: >
+        The author of an article. `slug` is the author's public-profile handle
+        and resolves at /user/{slug}; null for accounts that predate the slug
+        column. Full profile data (bio, cover photo, social links) for the
+        authenticated user is available via GET /api/me, not v1.
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string, nullable: true }
+security:
+  - bearerKey: []
+paths:
+  /articles:
+    get:
+      summary: List published articles
+      parameters:
+        - { in: query, name: page, schema: { type: integer } }
+        - { in: query, name: per_page, schema: { type: integer, maximum: 100 } }
+      responses:
+        "200":
+          description: Paginated list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  data: { type: array, items: { type: object } }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+    post:
+      summary: Create an article (requires article.create)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                body_markdown: { type: string }
+                slug: { type: string }
+                summary: { type: string }
+                status: { type: string, enum: [draft, published, archived] }
+                category_id: { type: integer, nullable: true }
+                cover_media_id: { type: integer, nullable: true }
+                meta_title: { type: string }
+                meta_description: { type: string }
+                tags: { type: array, items: { type: string } }
+      responses:
+        "201": { description: Created }
+        "403": { description: Forbidden }
+  /articles/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    get:
+      summary: Get one article
+      responses:
+        "200": { description: Article }
+        "404": { description: Not found }
+    patch:
+      summary: Update an article (requires article.edit.any/own)
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200": { description: Updated }
+        "403": { description: Forbidden }
+    delete:
+      summary: Delete an article (requires article.delete.any/own)
+      responses:
+        "200": { description: Deleted }
+        "403": { description: Forbidden }
+  /pages:
+    get:
+      summary: List published pages
+      responses: { "200": { description: Paginated list } }
+    post:
+      summary: Create a page (requires page.create)
+      responses: { "201": { description: Created } }
+  /pages/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    get: { summary: Get one page, responses: { "200": { description: Page } } }
+    patch: { summary: Update a page, responses: { "200": { description: Updated } } }
+    delete: { summary: Delete a page, responses: { "200": { description: Deleted } } }
+  /media:
+    get:
+      summary: List media (requires media.upload)
+      responses: { "200": { description: List } }
+    post:
+      summary: Upload media (multipart, field "file"; requires media.upload)
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        "201": { description: Created }
+  /media/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    get: { summary: Get one media, responses: { "200": { description: Media } } }
+    delete: { summary: Delete media, responses: { "200": { description: Deleted } } }
+  /comments:
+    get:
+      summary: List comments for moderation (requires comment.moderate)
+      parameters:
+        - { in: query, name: status, schema: { type: string, enum: [pending, approved, rejected, spam] } }
+      responses: { "200": { description: List } }
+  /comments/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    patch:
+      summary: Set comment status (requires comment.moderate)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: { type: string, enum: [approved, pending, rejected, spam] }
+      responses: { "200": { description: Updated } }

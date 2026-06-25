@@ -1,0 +1,24 @@
+# Local config contains secrets — keep the example template tracked instead.
+/config/config.local.php
+/config/sitemaster.hash
+/config/installed
+/config/profiles_backfilled
+
+# Uploaded media content (directory structure is kept via .gitkeep).
+/public_html/uploads/*
+!/public_html/uploads/.gitkeep
+!/public_html/uploads/.htaccess
+
+# Server-side cache (health endpoint, etc.). Keep the directory.
+/cache/*
+!/cache/.gitkeep
+
+# Application logs (mailer log, etc.). Keep the directory.
+/logs/*
+!/logs/.gitkeep
+
+# Backups contain secrets — never commit.
+/backups/*
+
+# Temporary docs to aid in prompting using AI agents
+/tasks/*
