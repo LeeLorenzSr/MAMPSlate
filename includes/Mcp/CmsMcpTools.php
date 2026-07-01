@@ -430,13 +430,11 @@ final class CmsMcpTools
 
     private static function articleData(array $a, string $body, string $status, int $authorId, ?array $existing, ?string $slugOverride = null, ?string $publishedAtOverride = null): array
     {
-        $markdown = $GLOBALS['markdown'];
         return [
             'title' => isset($a['title']) ? trim((string)$a['title']) : ($existing['title'] ?? ''),
             'slug' => $slugOverride ?? ($existing['slug'] ?? ''),
             'summary' => array_key_exists('summary', $a) ? (string)$a['summary'] : ($existing['summary'] ?? ''),
             'body_markdown' => $body,
-            'body_html' => $markdown->render($body),
             'status' => $status,
             'author_user_id' => $authorId,
             'category_id' => array_key_exists('category_id', $a) ? (int)$a['category_id'] : ($existing['category_id'] ?? null),
@@ -534,13 +532,11 @@ final class CmsMcpTools
 
     private static function pageData(array $a, string $body, string $status, int $authorId, ?array $existing, ?string $slugOverride = null, ?string $publishedAtOverride = null): array
     {
-        $markdown = $GLOBALS['markdown'];
         return [
             'title' => isset($a['title']) ? trim((string)$a['title']) : ($existing['title'] ?? ''),
             'slug' => $slugOverride ?? ($existing['slug'] ?? ''),
             'summary' => array_key_exists('summary', $a) ? (string)$a['summary'] : ($existing['summary'] ?? null),
             'body_markdown' => $body,
-            'body_html' => $markdown->render($body),
             'status' => $status,
             'author_user_id' => $authorId,
             'cover_media_id' => array_key_exists('cover_media_id', $a) ? (int)$a['cover_media_id'] : ($existing['cover_media_id'] ?? null),

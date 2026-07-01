@@ -184,7 +184,10 @@ final class PageRepository
             'slug' => $data['slug'],
             'summary' => $data['summary'] ?? null,
             'body_markdown' => $data['body_markdown'],
-            'body_html' => $data['body_html'],
+            // body_html is always regenerated from body_markdown here; any
+            // caller-supplied body_html is ignored so the renderer is the
+            // only source of persisted HTML (stored-XSS trust boundary).
+            'body_html' => (new MarkdownRenderer())->render((string)$data['body_markdown']),
             'status' => $data['status'] ?? 'draft',
             'author_user_id' => (int)$data['author_user_id'],
             'cover_media_id' => !empty($data['cover_media_id']) ? (int)$data['cover_media_id'] : null,

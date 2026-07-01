@@ -125,14 +125,13 @@ renderHeader('Revisions', $currentUser);
 
 function restore_snapshot(string $type, int $contentId, array $content, array $snap): void
 {
-    global $articles, $pages, $markdown;
+    global $articles, $pages;
     $bodyMarkdown = (string)($snap['body_markdown'] ?? '');
     $data = [
         'title' => (string)($snap['title'] ?? ''),
         'slug' => (string)($snap['slug'] ?? ''),
         'summary' => $snap['summary'] ?? null,
         'body_markdown' => $bodyMarkdown,
-        'body_html' => $markdown->render($bodyMarkdown),
         'status' => (string)($snap['status'] ?? 'draft'),
         'author_user_id' => (int)$content['author_user_id'],
         'cover_media_id' => $snap['cover_media_id'] ?? null,

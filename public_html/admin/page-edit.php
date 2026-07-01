@@ -73,7 +73,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             'slug' => $slug,
             'summary' => trim((string)($_POST['summary'] ?? '')) ?: null,
             'body_markdown' => $bodyMarkdown,
-            'body_html' => $markdown->render($bodyMarkdown),
             'status' => $status,
             'author_user_id' => (int)$page['author_user_id'],
             'cover_media_id' => $coverMediaId,

@@ -212,7 +212,6 @@ function route_articles(string $method, ?int $id): void
 
 function build_article_data(array $body, int $authorId, ?array $existing): array
 {
-    global $markdown;
     $title = trim((string)($body['title'] ?? ($existing['title'] ?? '')));
     if ($title === '') {
         api_error(422, 'validation', 'Title is required.');
@@ -235,7 +234,6 @@ function build_article_data(array $body, int $authorId, ?array $existing): array
         'slug' => $slug,
         'summary' => isset($body['summary']) ? (string)$body['summary'] : ($existing['summary'] ?? ''),
         'body_markdown' => $bodyMarkdown,
-        'body_html' => $markdown->render($bodyMarkdown),
         'status' => $status,
         'author_user_id' => $authorId,
         'category_id' => isset($body['category_id']) ? (int)$body['category_id'] : ($existing['category_id'] ?? null),
@@ -314,7 +312,6 @@ function route_pages(string $method, ?int $id): void
 
 function build_page_data(array $body, int $authorId, ?array $existing): array
 {
-    global $markdown;
     $title = trim((string)($body['title'] ?? ($existing['title'] ?? '')));
     if ($title === '') {
         api_error(422, 'validation', 'Title is required.');
@@ -337,7 +334,6 @@ function build_page_data(array $body, int $authorId, ?array $existing): array
         'slug' => $slug,
         'summary' => isset($body['summary']) ? (string)$body['summary'] : ($existing['summary'] ?? null),
         'body_markdown' => $bodyMarkdown,
-        'body_html' => $markdown->render($bodyMarkdown),
         'status' => $status,
         'author_user_id' => $authorId,
         'cover_media_id' => isset($body['cover_media_id']) ? (int)$body['cover_media_id'] : ($existing['cover_media_id'] ?? null),

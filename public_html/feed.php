@@ -32,7 +32,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
                     <pubDate><?= e(date('r', strtotime($item['published_at']))) ?></pubDate>
                 <?php endif; ?>
                 <?php if (!empty($item['summary'])): ?>
-                    <description><![CDATA[<?= $item['summary'] ?>]]></description>
+                    <description><?= e($item['summary']) ?></description>
                 <?php endif; ?>
             </item>
         <?php endforeach; ?>

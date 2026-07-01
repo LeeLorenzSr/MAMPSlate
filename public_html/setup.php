@@ -44,10 +44,48 @@ $localConfigPath = APP_ROOT . '/config/config.local.php';
 $sqlInitDir = APP_ROOT . '/sql_init';
 
 $hasSiteMaster = is_file($siteMasterFile) && filesize($siteMasterFile) > 0;
+
+// Once the site has been configured, the first-run wizard is locked unless an
+// operator explicitly re-enables it in config.local.php. save_finish writes
+// 'setup' => ['enabled' => false] so the wizard auto-locks after first run.
+$localCfg = is_file($localConfigPath) ? (require $localConfigPath) : [];
+$setupEnabled = is_array($localCfg) && (bool)($localCfg['setup']['enabled'] ?? true);
+
 $authed = (bool)($_SESSION['setup_authed'] ?? false);
 $message = null;
 $error = null;
 $results = null;
+
+// Hard gate: when disabled, refuse every action and render a locked page.
+// This runs before any POST handling so no setup action can execute.
+if (!$setupEnabled) {
+    http_response_code(403);
+    security_headers();
+    prevent_caching();
+    ?>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Setup disabled | MAMPSlate CMS</title>
+    <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" href="/">MAMPSlate CMS</a>
+</header>
+<main class="page setup-wrap">
+    <h1>Setup is disabled</h1>
+    <p class="notice error">First-run setup has already completed and is locked for safety.</p>
+    <p class="muted">To re-run setup, set <code>'setup' =&gt; ['enabled' =&gt; true]</code> in <code>config/config.local.php</code> and reload this page. Set it back to <code>false</code> when finished to re-lock.</p>
+    <p><a class="link-button" href="/">Return to the site</a></p>
+</main>
+</body>
+</html>
+    <?php
+    exit;
+}
 
 /** Connect to MySQL, optionally selecting a database. */
 function setup_connect(string $host, int $port, string $user, string $pass, ?string $dbname = null): PDO
@@ -280,6 +318,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                     'charset' => 'utf8mb4',
                 ];
                 $base['app']['base_url'] = detect_base_url();
+
+                // Lock the first-run wizard now that the site is configured.
+                $base['setup'] = ['enabled' => false];
 
                 $written = @file_put_contents(
                     $localConfigPath,

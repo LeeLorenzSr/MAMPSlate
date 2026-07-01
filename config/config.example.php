@@ -80,6 +80,13 @@ return [
         'max_body_chars' => 50000,
         'max_per_page' => 50,
     ],
+    // First-run setup wizard (/setup). The wizard auto-writes
+    // 'enabled' => false into config.local.php once setup completes, locking
+    // /setup for safety. Set it back to true here (or in config.local.php) to
+    // re-run setup, then return to false to re-lock.
+    'setup' => [
+        'enabled' => true,
+    ],
     // Toggle CMS subsystems when copying this base to a new project.
     'features' => [
         'articles' => true,

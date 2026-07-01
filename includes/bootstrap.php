@@ -38,11 +38,29 @@ if (!is_file($configPath)) {
 
 $config = require $configPath;
 
+// Fail fast on insecure production defaults. Local env (the shipped default)
+// is exempt, so first-run and localhost development are unaffected. This only
+// triggers when an operator switches env away from 'local' without setting a
+// real secret / production OAuth redirect URIs.
+if (($config['app']['env'] ?? 'local') !== 'local') {
+    if (($config['security']['app_secret'] ?? '') === 'replace-with-at-least-32-random-characters') {
+        http_response_code(500);
+        exit('Server misconfiguration.');
+    }
+    foreach (['google', 'github'] as $provider) {
+        $oc = $config['oauth'][$provider] ?? [];
+        if (!empty($oc['enabled']) && stripos((string)($oc['redirect_uri'] ?? ''), 'localhost') !== false) {
+            http_response_code(500);
+            exit('Server misconfiguration.');
+        }
+    }
+}
+
 session_name($config['app']['session_name']);
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
-    'secure' => (bool)$config['security']['secure_cookies'],
+    'secure' => (bool)$config['security']['secure_cookies'] || is_https(),
     'httponly' => true,
     'samesite' => 'Lax',
 ]);
@@ -60,16 +78,24 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 // on every request. The connection check still runs, so a down database still
 // redirects to setup.
 $installedMarker = APP_ROOT . '/config/installed';
+$alreadyInstalled = is_file($installedMarker);
 try {
     $pdo = Database::connect($config['database']);
-    if (!is_file($installedMarker)) {
+    if (!$alreadyInstalled) {
         if (!Database::schemaInstalled($pdo)) {
             redirect('/setup');
         }
         @file_put_contents($installedMarker, date('c'));
     }
 } catch (Throwable $e) {
-    redirect('/setup');
+    // First run (not installed yet): route to the setup wizard. On an already
+    // configured site, a DB failure is an outage — serve a 503 instead of
+    // exposing /setup on a live site.
+    if (!$alreadyInstalled) {
+        redirect('/setup');
+    }
+    http_response_code(503);
+    exit('This site is temporarily unavailable.');
 }
 
 $users = new UserRepository($pdo);

@@ -169,7 +169,10 @@ final class ArticleRepository
             'slug' => $data['slug'],
             'summary' => $data['summary'] ?? '',
             'body_markdown' => $data['body_markdown'],
-            'body_html' => $data['body_html'],
+            // body_html is always regenerated from body_markdown here; any
+            // caller-supplied body_html is ignored so the renderer is the
+            // only source of persisted HTML (stored-XSS trust boundary).
+            'body_html' => (new MarkdownRenderer())->render((string)$data['body_markdown']),
             'status' => $data['status'] ?? 'draft',
             'author_user_id' => (int)$data['author_user_id'],
             'category_id' => $data['category_id'] !== null ? (int)$data['category_id'] : null,
@@ -204,7 +207,7 @@ final class ArticleRepository
             'slug' => $data['slug'],
             'summary' => $data['summary'] ?? '',
             'body_markdown' => $data['body_markdown'],
-            'body_html' => $data['body_html'],
+            'body_html' => (new MarkdownRenderer())->render((string)$data['body_markdown']),
             'status' => $data['status'] ?? 'draft',
             'category_id' => $data['category_id'] !== null ? (int)$data['category_id'] : null,
             'cover_media_id' => $data['cover_media_id'] !== null ? (int)$data['cover_media_id'] : null,

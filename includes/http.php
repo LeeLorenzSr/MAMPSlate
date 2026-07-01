@@ -8,6 +8,14 @@ function redirect(string $path): never
 }
 
 /**
+ * Whether the current request arrived over HTTPS.
+ */
+function is_https(): bool
+{
+    return !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+}
+
+/**
  * Per-request CSP nonce for inline scripts. Generated once per request.
  */
 function csp_nonce(): string
