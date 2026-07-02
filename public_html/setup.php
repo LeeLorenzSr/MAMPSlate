@@ -70,7 +70,7 @@ if (!$setupEnabled) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Setup disabled | MAMPSlate CMS</title>
     <?php setup_head_icons(); ?>
-    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="/assets/site.css?v=20260702">
 </head>
 <body>
 <header class="site-header">
@@ -100,6 +100,7 @@ function setup_head_icons(): void
     <link rel="preload" href="/assets/fonts/montserrat-latin-600.woff2" as="font" type="font/woff2" crossorigin>
     <meta name="theme-color" content="#2458a6" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0f131a" media="(prefers-color-scheme: dark)">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <?php
 }
 
@@ -388,7 +389,7 @@ $baseUrl = detect_base_url();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Setup | MAMPSlate CMS</title>
     <?php setup_head_icons(); ?>
-    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="/assets/site.css?v=20260702">
     <style>
         .setup-wrap { max-width: 720px; margin: 32px auto; padding: 0 16px; }
         .setup-step { margin-bottom: 28px; }

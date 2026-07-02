@@ -654,6 +654,51 @@ legend {
     .article-card { grid-template-columns: 1fr; }
 }
 
+/* ---------- Icons & rich cards ---------- */
+i.bi {
+    vertical-align: -0.14em;
+    line-height: 1;
+}
+.nav i.bi,
+.nav-link i.bi,
+.menu-header i.bi,
+.menu-footer i.bi {
+    margin-right: 5px;
+    font-size: 0.95em;
+}
+.hero-cta .bi { margin-right: 6px; }
+
+.article-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    align-items: center;
+    margin: 0;
+}
+.article-card-meta .bi { margin-right: 4px; }
+
+.article-card-cover {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+}
+.article-card-cover img {
+    transition: transform 0.4s ease;
+}
+.article-card:hover .article-card-cover img {
+    transform: scale(1.05);
+}
+
+.empty-state {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.empty-state .bi {
+    font-size: 1.5rem;
+    color: var(--muted);
+}
+
 .pagination {
     display: flex;
     flex-wrap: wrap;

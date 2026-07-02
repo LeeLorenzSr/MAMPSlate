@@ -34,29 +34,29 @@ if ($category) {
 renderHeader($title, $currentUser);
 ?>
 <section class="panel">
-    <h2><?= e($title) ?></h2>
+    <h2><i class="bi bi-collection"></i> <?= e($title) ?></h2>
     <?php if (!$items): ?>
-        <p class="muted">No articles published yet.</p>
+        <p class="empty-state"><i class="bi bi-inbox"></i> No articles published yet.</p>
     <?php else: ?>
         <div class="article-list">
             <?php foreach ($items as $item): ?>
                 <article class="article-card">
-                    <?php if (!empty($item['cover'])): ?>
-                        <a class="article-card-cover" href="/articles/<?= e($item['slug']) ?>">
-                            <img src="/uploads/<?= e($item['cover']) ?>" alt="<?= e($item['title']) ?>" loading="lazy">
-                        </a>
-                    <?php endif; ?>
+                    <?php $cardCover = !empty($item['cover']) ? '/uploads/' . $item['cover'] : '/assets/img/default-cover.jpg'; ?>
+                    <a class="article-card-cover" href="/articles/<?= e($item['slug']) ?>">
+                        <img src="<?= e($cardCover) ?>" alt="<?= e($item['title']) ?>" loading="lazy">
+                    </a>
                     <div class="article-card-body">
                         <h3><a href="/articles/<?= e($item['slug']) ?>"><?= e($item['title']) ?></a></h3>
                         <?php if ($item['category_name']): ?>
-                            <p class="muted"><a href="/category/<?= e($item['category_slug']) ?>"><?= e($item['category_name']) ?></a></p>
+                            <p class="muted"><a href="/category/<?= e($item['category_slug']) ?>"><i class="bi bi-tag"></i> <?= e($item['category_name']) ?></a></p>
                         <?php endif; ?>
                         <?php if ($item['summary']): ?>
                             <p><?= e($item['summary']) ?></p>
                         <?php endif; ?>
-                        <p class="muted">by <?= e($item['author_name']) ?>
+                        <p class="muted article-card-meta">
+                            <span><i class="bi bi-person"></i> <?= e($item['author_name']) ?></span>
                             <?php if ($item['published_at']): ?>
-                                on <?= e(date('M j, Y', strtotime($item['published_at']))) ?>
+                                <span><i class="bi bi-calendar3"></i> <?= e(date('M j, Y', strtotime($item['published_at']))) ?></span>
                             <?php endif; ?>
                         </p>
                     </div>

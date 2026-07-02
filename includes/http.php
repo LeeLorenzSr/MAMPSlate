@@ -41,9 +41,9 @@ function security_headers(?string $nonce = null): void
 
     $csp = "default-src 'self'; "
         . $scriptSrc . "; "
-        . "style-src 'self' 'unsafe-inline'; "
+        . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
         . "img-src 'self' data:; "
-        . "font-src 'self'; "
+        . "font-src 'self' https://cdn.jsdelivr.net; "
         . "connect-src 'self'; "
         . "object-src 'none'; "
         . "base-uri 'self'; "

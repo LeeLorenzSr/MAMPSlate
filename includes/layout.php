@@ -75,7 +75,8 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     <link rel="preload" href="/assets/fonts/montserrat-latin-600.woff2" as="font" type="font/woff2" crossorigin>
     <meta name="theme-color" content="#2458a6" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0f131a" media="(prefers-color-scheme: dark)">
-    <link rel="stylesheet" href="/assets/site.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/assets/site.css?v=20260702">
     <link rel="alternate" type="application/rss+xml" title="<?= e($appName) ?>" href="<?= e($baseUrl . '/feed') ?>">
 </head>
 <body>
@@ -94,56 +95,56 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     <div class="header-right">
         <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle theme"></button>
         <?php if (feature('articles')): ?>
-            <a href="/articles" class="nav-link">Articles</a>
+            <a href="/articles" class="nav-link"><i class="bi bi-collection"></i> Articles</a>
         <?php endif; ?>
         <?php if ($user): ?>
             <a class="header-avatar" href="/profile" title="Your profile"><?php renderAvatar($user, 32) ?></a>
             <nav class="nav">
-                <a href="/profile">Profile</a>
+                <a href="/profile"><i class="bi bi-person"></i> Profile</a>
                 <?php $caps = $user['_capabilities'] ?? []; ?>
                 <?php if ($GLOBALS['auth']->canAccessAdmin()): ?>
-                    <a href="/admin">Dashboard</a>
-                    <a href="/admin/search">Search</a>
+                    <a href="/admin"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    <a href="/admin/search"><i class="bi bi-search"></i> Search</a>
                 <?php endif; ?>
                 <?php if (in_array('article.create', $caps, true) && feature('articles')): ?>
-                    <a href="/admin/articles">Articles</a>
+                    <a href="/admin/articles"><i class="bi bi-file-earmark-text"></i> Articles</a>
                 <?php endif; ?>
                 <?php if (in_array('page.create', $caps, true) && feature('pages')): ?>
-                    <a href="/admin/pages">Pages</a>
+                    <a href="/admin/pages"><i class="bi bi-file-earmark"></i> Pages</a>
                 <?php endif; ?>
                 <?php if (in_array('user.manage', $caps, true)): ?>
-                    <a href="/admin/users">Users</a>
-                    <a href="/admin/invites">Invites</a>
+                    <a href="/admin/users"><i class="bi bi-people"></i> Users</a>
+                    <a href="/admin/invites"><i class="bi bi-person-plus"></i> Invites</a>
                 <?php endif; ?>
                 <?php if (in_array('role.manage', $caps, true)): ?>
-                    <a href="/admin/roles">Roles</a>
+                    <a href="/admin/roles"><i class="bi bi-shield-check"></i> Roles</a>
                 <?php endif; ?>
                 <?php if (in_array('apikey.manage', $caps, true)): ?>
-                    <a href="/admin/api-keys">API keys</a>
+                    <a href="/admin/api-keys"><i class="bi bi-key"></i> API keys</a>
                 <?php endif; ?>
                 <?php if (in_array('media.upload', $caps, true) && feature('media')): ?>
-                    <a href="/admin/media">Media</a>
+                    <a href="/admin/media"><i class="bi bi-images"></i> Media</a>
                 <?php endif; ?>
                 <?php if (in_array('comment.moderate', $caps, true) && feature('comments')): ?>
-                    <a href="/admin/comments">Comments</a>
+                    <a href="/admin/comments"><i class="bi bi-chat-dots"></i> Comments</a>
                 <?php endif; ?>
                 <?php if (in_array('menu.manage', $caps, true)): ?>
-                    <a href="/admin/menus">Menus</a>
+                    <a href="/admin/menus"><i class="bi bi-list"></i> Menus</a>
                 <?php endif; ?>
                 <?php if (in_array('settings.manage', $caps, true)): ?>
-                    <a href="/admin/settings">Settings</a>
-                    <a href="/admin/migrations">Migrations</a>
+                    <a href="/admin/settings"><i class="bi bi-gear"></i> Settings</a>
+                    <a href="/admin/migrations"><i class="bi bi-database-up"></i> Migrations</a>
                 <?php endif; ?>
                 <?php if (in_array('audit.view', $caps, true)): ?>
-                    <a href="/admin/audit-log">Audit log</a>
+                    <a href="/admin/audit-log"><i class="bi bi-clipboard-data"></i> Audit log</a>
                 <?php endif; ?>
                 <?php if (in_array('audit.view', $caps, true)): ?>
-                    <a href="/admin/audit-log">Audit log</a>
+                    <a href="/admin/audit-log"><i class="bi bi-clipboard-data"></i> Audit log</a>
                 <?php endif; ?>
-                <a href="/logout">Logout</a>
+                <a href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
             </nav>
         <?php else: ?>
-            <button type="button" class="auth-trigger" aria-haspopup="dialog">Sign in</button>
+            <button type="button" class="auth-trigger" aria-haspopup="dialog"><i class="bi bi-box-arrow-in-right"></i> Sign in</button>
         <?php endif; ?>
     </div>
 </header>
@@ -261,7 +262,7 @@ function renderFooter(): void
             <?php endforeach; ?>
         </nav>
         <?php endif; ?>
-        <p class="muted">&copy; <?= e(date('Y')) ?> <?= e($appName) ?></p>
+        <p class="muted"><i class="bi bi-globe2"></i> &copy; <?= e(date('Y')) ?> <?= e($appName) ?></p>
     </div>
 </footer>
 <script src="/assets/theme.js" defer></script>

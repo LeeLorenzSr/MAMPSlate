@@ -38,9 +38,9 @@ renderHeader('Home', $currentUser, [
             <h1 class="hero-title"><?= e($config['app']['name']) ?></h1>
             <p class="hero-sub">A fast, dependency-free publishing platform. Read the latest below, create an account, or sign in with Google or GitHub.</p>
             <div class="hero-cta">
-                <button type="button" class="auth-trigger">Sign in</button>
+                <button type="button" class="auth-trigger"><i class="bi bi-box-arrow-in-right"></i> Sign in</button>
                 <?php if (feature('articles')): ?>
-                    <a class="btn-ghost" href="/articles">Browse articles</a>
+                    <a class="btn-ghost" href="/articles"><i class="bi bi-collection"></i> Browse articles</a>
                 <?php endif; ?>
             </div>
         </div>
@@ -52,9 +52,9 @@ renderHeader('Home', $currentUser, [
             <h1 class="hero-title">Welcome back, <?= e($currentUser['display_name']) ?></h1>
             <p class="hero-sub">You're signed in as <strong><?= e($currentUser['role_name']) ?></strong>. Jump to your profile or the dashboard.</p>
             <div class="hero-cta">
-                <a class="btn-ghost" href="/profile">Your profile</a>
+                <a class="btn-ghost" href="/profile"><i class="bi bi-person"></i> Your profile</a>
                 <?php if ($auth->canAccessAdmin()): ?>
-                    <a class="btn-ghost" href="/admin">Dashboard</a>
+                    <a class="btn-ghost" href="/admin"><i class="bi bi-speedometer2"></i> Dashboard</a>
                 <?php endif; ?>
             </div>
         </div>
@@ -65,30 +65,30 @@ renderHeader('Home', $currentUser, [
     <?php $recentArticles = $articles->listPublished(1, 5, null, null); ?>
     <?php if ($recentArticles): ?>
     <section class="panel">
-        <h2>Recent articles</h2>
+        <h2><i class="bi bi-newspaper"></i> Recent articles</h2>
         <div class="article-list">
             <?php foreach ($recentArticles as $item): ?>
                 <article class="article-card">
-                    <?php if (!empty($item['cover'])): ?>
-                        <a class="article-card-cover" href="/articles/<?= e($item['slug']) ?>">
-                            <img src="/uploads/<?= e($item['cover']) ?>" alt="<?= e($item['title']) ?>" loading="lazy">
-                        </a>
-                    <?php endif; ?>
+                    <?php $cardCover = !empty($item['cover']) ? '/uploads/' . $item['cover'] : '/assets/img/default-cover.jpg'; ?>
+                    <a class="article-card-cover" href="/articles/<?= e($item['slug']) ?>">
+                        <img src="<?= e($cardCover) ?>" alt="<?= e($item['title']) ?>" loading="lazy">
+                    </a>
                     <div class="article-card-body">
                         <h3><a href="/articles/<?= e($item['slug']) ?>"><?= e($item['title']) ?></a></h3>
                         <?php if ($item['summary']): ?>
                             <p><?= e($item['summary']) ?></p>
                         <?php endif; ?>
-                        <p class="muted">by <?= e($item['author_name']) ?>
+                        <p class="muted article-card-meta">
+                            <span><i class="bi bi-person"></i> <?= e($item['author_name']) ?></span>
                             <?php if ($item['published_at']): ?>
-                                on <?= e(date('M j, Y', strtotime($item['published_at']))) ?>
+                                <span><i class="bi bi-calendar3"></i> <?= e(date('M j, Y', strtotime($item['published_at']))) ?></span>
                             <?php endif; ?>
                         </p>
                     </div>
                 </article>
             <?php endforeach; ?>
         </div>
-        <p class="space-top"><a href="/articles">Browse all articles →</a></p>
+        <p class="space-top"><a href="/articles"><i class="bi bi-arrow-right"></i> Browse all articles</a></p>
     </section>
     <?php endif; ?>
 <?php endif; ?>
