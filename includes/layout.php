@@ -23,6 +23,10 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     if ($ogImage !== null && $ogImage !== '' && !preg_match('#^https?://#', $ogImage)) {
         $ogImage = $baseUrl . $ogImage;
     }
+    // Default social share image so every page has an og:image.
+    if ($ogImage === null || $ogImage === '') {
+        $ogImage = ($baseUrl !== '' ? $baseUrl : '') . '/assets/img/og-default.png';
+    }
     $jsonLd = $seo['jsonLd'] ?? null;
     ?>
 <!doctype html>
@@ -63,12 +67,23 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     <?php if ($jsonLd !== null): ?>
         <script type="application/ld+json" nonce="<?= e($nonce) ?>"><?= json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?></script>
     <?php endif; ?>
+    <link rel="icon" href="/assets/img/favicon.ico" sizes="any">
+    <link rel="icon" href="/assets/img/icon-32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="/assets/img/icon-16.png" type="image/png" sizes="16x16">
+    <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="preload" href="/assets/fonts/montserrat-latin-600.woff2" as="font" type="font/woff2" crossorigin>
+    <meta name="theme-color" content="#2458a6" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0f131a" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="/assets/site.css">
     <link rel="alternate" type="application/rss+xml" title="<?= e($appName) ?>" href="<?= e($baseUrl . '/feed') ?>">
 </head>
 <body>
 <header class="site-header">
-    <a class="brand" href="/"><?= e($appName) ?></a>
+    <a class="brand" href="/" aria-label="<?= e($appName) ?> — home">
+        <span class="brand-logo" aria-hidden="true"></span>
+        <span class="brand-name"><?= e($appName) ?></span>
+    </a>
     <?php if ($headerMenu): ?>
     <nav class="menu-header" aria-label="Primary">
         <?php foreach ($headerMenu as $item): ?>
@@ -136,7 +151,9 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     <?php renderAuthModal(); ?>
 <?php endif; ?>
 <main class="page">
+    <?php if (empty($seo['hide_h1'])): ?>
     <h1><?= e($title) ?></h1>
+    <?php endif; ?>
 <?php
 }
 

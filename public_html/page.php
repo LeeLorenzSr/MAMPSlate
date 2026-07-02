@@ -28,6 +28,8 @@ if ($page['cover_media_id']) {
 
 $seoDescription = $page['meta_description'] !== '' ? $page['meta_description'] : ($page['summary'] ?? '');
 $ogImage = $cover ? (setting('app.base_url') . '/uploads/' . $cover['stored_name']) : null;
+$coverSrc = $cover ? ('/uploads/' . $cover['stored_name']) : '/assets/img/default-cover.jpg';
+$coverAlt = $cover ? ($cover['alt_text'] ?: $page['title']) : $page['title'];
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@type' => 'WebPage',
@@ -53,9 +55,7 @@ renderHeader(
 ?>
 <article class="article-view">
     <h2><?= e($page['title']) ?></h2>
-    <?php if ($cover): ?>
-        <img class="article-cover" src="/uploads/<?= e($cover['stored_name']) ?>" alt="<?= e($cover['alt_text'] ?: $page['title']) ?>">
-    <?php endif; ?>
+    <img class="article-cover" src="<?= e($coverSrc) ?>" alt="<?= e($coverAlt) ?>">
     <div class="article-body">
         <?= $page['body_html'] ?>
     </div>

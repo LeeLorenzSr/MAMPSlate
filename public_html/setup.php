@@ -69,11 +69,12 @@ if (!$setupEnabled) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Setup disabled | MAMPSlate CMS</title>
+    <?php setup_head_icons(); ?>
     <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
 <header class="site-header">
-    <a class="brand" href="/">MAMPSlate CMS</a>
+    <?php setup_brand_link(); ?>
 </header>
 <main class="page setup-wrap">
     <h1>Setup is disabled</h1>
@@ -85,6 +86,32 @@ if (!$setupEnabled) {
 </html>
     <?php
     exit;
+}
+
+/** Branded <head> icons + font preload (matches includes/layout.php). */
+function setup_head_icons(): void
+{
+    ?>
+    <link rel="icon" href="/assets/img/favicon.ico" sizes="any">
+    <link rel="icon" href="/assets/img/icon-32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="/assets/img/icon-16.png" type="image/png" sizes="16x16">
+    <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="preload" href="/assets/fonts/montserrat-latin-600.woff2" as="font" type="font/woff2" crossorigin>
+    <meta name="theme-color" content="#2458a6" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0f131a" media="(prefers-color-scheme: dark)">
+    <?php
+}
+
+/** Branded header logo + wordmark (matches includes/layout.php). */
+function setup_brand_link(): void
+{
+    ?>
+    <a class="brand" href="/" aria-label="MAMPSlate CMS — home">
+        <span class="brand-logo" aria-hidden="true"></span>
+        <span class="brand-name">MAMPSlate CMS</span>
+    </a>
+    <?php
 }
 
 /** Connect to MySQL, optionally selecting a database. */
@@ -360,6 +387,7 @@ $baseUrl = detect_base_url();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Setup | MAMPSlate CMS</title>
+    <?php setup_head_icons(); ?>
     <link rel="stylesheet" href="/assets/site.css">
     <style>
         .setup-wrap { max-width: 720px; margin: 32px auto; padding: 0 16px; }
@@ -376,7 +404,7 @@ $baseUrl = detect_base_url();
 </head>
 <body>
 <header class="site-header">
-    <a class="brand" href="/">MAMPSlate CMS</a>
+    <?php setup_brand_link(); ?>
     <div class="header-right"><span class="muted">First-run setup</span></div>
 </header>
 <main class="page setup-wrap">

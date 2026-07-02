@@ -70,6 +70,8 @@ function renderComments(array $tree, int $depth = 0): void
 
 $seoDescription = $article['meta_description'] !== '' ? $article['meta_description'] : $article['summary'];
 $ogImage = $cover ? ($GLOBALS['config']['app']['base_url'] ?? '') . '/uploads/' . $cover['stored_name'] : null;
+$coverSrc = $cover ? ('/uploads/' . $cover['stored_name']) : '/assets/img/default-cover.jpg';
+$coverAlt = $cover ? ($cover['alt_text'] ?: $article['title']) : $article['title'];
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@type' => 'Article',
@@ -106,9 +108,7 @@ renderHeader(
         <?php endif; ?>
     </p>
 
-    <?php if ($cover): ?>
-        <img class="article-cover" src="/uploads/<?= e($cover['stored_name']) ?>" alt="<?= e($cover['alt_text'] ?: $article['title']) ?>">
-    <?php endif; ?>
+    <img class="article-cover" src="<?= e($coverSrc) ?>" alt="<?= e($coverAlt) ?>">
 
     <div class="article-body">
         <?= $article['body_html'] ?>

@@ -16,6 +16,7 @@ unset($_SESSION['reset_notice']);
 renderHeader('Home', $currentUser, [
     'canonical' => '/',
     'og_type' => 'website',
+    'hide_h1' => true,
     'jsonLd' => [
         '@context' => 'https://schema.org',
         '@type' => 'WebSite',
@@ -31,15 +32,32 @@ renderHeader('Home', $currentUser, [
     <p class="notice success"><?= e($resetNotice) ?></p>
 <?php endif; ?>
 <?php if (empty($currentUser)): ?>
-    <section class="panel hero">
-        <h2>Welcome to <?= e($config['app']['name']) ?></h2>
-        <p class="muted">This is the public landing page. Guests can browse content here without an account.</p>
-        <p>Use the <strong>Sign in</strong> link in the top-right corner to log in, create an account, or sign in with Google or GitHub.</p>
+    <section class="hero">
+        <div class="hero-inner">
+            <span class="hero-eyebrow">MAMPSlate CMS</span>
+            <h1 class="hero-title"><?= e($config['app']['name']) ?></h1>
+            <p class="hero-sub">A fast, dependency-free publishing platform. Read the latest below, create an account, or sign in with Google or GitHub.</p>
+            <div class="hero-cta">
+                <button type="button" class="auth-trigger">Sign in</button>
+                <?php if (feature('articles')): ?>
+                    <a class="btn-ghost" href="/articles">Browse articles</a>
+                <?php endif; ?>
+            </div>
+        </div>
     </section>
 <?php else: ?>
-    <section class="panel">
-        <p>You are signed in as <strong><?= e($currentUser['display_name']) ?></strong> (<?= e($currentUser['role_name']) ?>).</p>
-        <p><a href="/profile">Go to your profile</a></p>
+    <section class="hero">
+        <div class="hero-inner">
+            <span class="hero-eyebrow">Signed in</span>
+            <h1 class="hero-title">Welcome back, <?= e($currentUser['display_name']) ?></h1>
+            <p class="hero-sub">You're signed in as <strong><?= e($currentUser['role_name']) ?></strong>. Jump to your profile or the dashboard.</p>
+            <div class="hero-cta">
+                <a class="btn-ghost" href="/profile">Your profile</a>
+                <?php if ($auth->canAccessAdmin()): ?>
+                    <a class="btn-ghost" href="/admin">Dashboard</a>
+                <?php endif; ?>
+            </div>
+        </div>
     </section>
 <?php endif; ?>
 
