@@ -277,25 +277,37 @@ h2 {
 .hero {
     position: relative;
     margin: 0 0 32px;
-    padding: 72px 28px;
+    padding: 64px;
     border-radius: var(--radius-lg);
     overflow: hidden;
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: var(--shadow-lg);
-    background: #16243d url('/assets/img/hero.jpg') center / cover no-repeat;
+    background:
+        radial-gradient(760px 420px at 92% 18%, rgba(79, 141, 224, 0.16), transparent 66%),
+        linear-gradient(135deg, #101923 0%, #172333 54%, #1f2931 100%);
 }
 .hero::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(115deg, rgba(13, 24, 45, 0.92) 0%, rgba(13, 24, 45, 0.7) 45%, rgba(13, 24, 45, 0.35) 100%);
+    background:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 64px 64px;
+    opacity: 0.42;
 }
 .hero-inner {
     position: relative;
-    width: min(720px, 100%);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+    gap: 48px;
+    align-items: center;
+    width: 100%;
     margin: 0 auto;
-    text-align: center;
+}
+.hero-copy {
+    max-width: 650px;
 }
 .hero-eyebrow {
     display: inline-block;
@@ -322,12 +334,35 @@ h2 {
     font-size: clamp(1rem, 0.9rem + 0.5vw, 1.18rem);
     color: #cdd9ec;
     line-height: 1.6;
+    max-width: 58ch;
 }
 .hero-cta {
     display: flex;
     gap: 12px;
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
+}
+.hero-graphic {
+    justify-self: end;
+    width: min(100%, 420px);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    padding: clamp(18px, 4vw, 34px);
+    border: 1px solid rgba(230, 238, 245, 0.16);
+    border-radius: 26px;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
+        rgba(15, 22, 30, 0.38);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 28px 70px -38px rgba(3, 9, 16, 0.9);
+}
+.hero-graphic img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 24px 28px rgba(2, 8, 14, 0.34));
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -494,14 +529,27 @@ button.danger:hover {
 /* Ghost / secondary button variant */
 button.ghost,
 .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 18px;
     background: transparent;
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
 }
 button.ghost:hover,
 .btn-ghost:hover {
     background: rgba(255, 255, 255, 0.12);
     border-color: #ffffff;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
 }
 
 /* ---------- Media grid ---------- */
@@ -1015,6 +1063,17 @@ th {
     .grid-form { grid-template-columns: 1fr; }
     .details { grid-template-columns: 1fr; }
     .hero { padding: 48px 18px; }
+    .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+    .hero-copy {
+        max-width: none;
+    }
+    .hero-graphic {
+        justify-self: center;
+        width: min(100%, 340px);
+    }
 }
 
 /* ---------- Auth trigger + modal ---------- */

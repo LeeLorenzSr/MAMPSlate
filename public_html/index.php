@@ -32,16 +32,21 @@ renderHeader('Home', $currentUser, [
     <p class="notice success"><?= e($resetNotice) ?></p>
 <?php endif; ?>
 <?php if (empty($currentUser)): ?>
-    <section class="hero">
+    <section class="hero hero-public">
         <div class="hero-inner">
-            <span class="hero-eyebrow">MAMPSlate CMS</span>
-            <h1 class="hero-title"><?= e($config['app']['name']) ?></h1>
-            <p class="hero-sub">A fast, dependency-free publishing platform. Read the latest below, create an account, or sign in with Google or GitHub.</p>
-            <div class="hero-cta">
-                <button type="button" class="auth-trigger"><i class="bi bi-box-arrow-in-right"></i> Sign in</button>
-                <?php if (feature('articles')): ?>
-                    <a class="btn-ghost" href="/articles"><i class="bi bi-collection"></i> Browse articles</a>
-                <?php endif; ?>
+            <div class="hero-copy">
+                <span class="hero-eyebrow">MAMPSlate CMS</span>
+                <h1 class="hero-title"><?= e($config['app']['name']) ?></h1>
+                <p class="hero-sub">A fast, dependency-free publishing platform. Read the latest articles, create an account, or sign in with Google or GitHub.</p>
+                <div class="hero-cta">
+                    <button type="button" class="auth-trigger"><i class="bi bi-box-arrow-in-right"></i> Sign in</button>
+                    <?php if (feature('articles')): ?>
+                        <a class="btn-ghost" href="/articles"><i class="bi bi-collection"></i> Browse Articles</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="hero-graphic" aria-hidden="true">
+                <img src="/assets/img/logo.png" alt="">
             </div>
         </div>
     </section>
