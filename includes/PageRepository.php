@@ -179,7 +179,7 @@ final class PageRepository
 
     private function bindExecute(PDOStatement $stmt, array $data): void
     {
-        $stmt->execute([
+        $params = [
             'title' => $data['title'],
             'slug' => $data['slug'],
             'summary' => $data['summary'] ?? null,
@@ -194,7 +194,12 @@ final class PageRepository
             'meta_title' => $data['meta_title'] ?? '',
             'meta_description' => $data['meta_description'] ?? '',
             'published_at' => $data['published_at'] ?? null,
-            'id' => $data['id'] ?? null,
-        ]);
+        ];
+        // :id only exists in the UPDATE statement; omit it for INSERT so the
+        // bound parameter count matches the placeholders (native prepares).
+        if (array_key_exists('id', $data)) {
+            $params['id'] = $data['id'];
+        }
+        $stmt->execute($params);
     }
 }

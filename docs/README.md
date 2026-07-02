@@ -22,6 +22,7 @@ reusable **base CMS** — copy it to a new project and specialize it.
 - [Coding Standards](coding-standards.md) — PHP conventions for this codebase.
 - [Security Standards](security-standards.md) — security principles and controls.
 - [Style Preferences](style-preferences.md) — UI and content style guidance.
+- [Branding & Site Images](branding-assets.md) — the `assets/img/` folder and the basic set of logos, favicons, and share images.
 - [Deployment Checklist](deployment-checklist.md) — launch procedure.
 
 These documents describe the current implementation and should be revised as
