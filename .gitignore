@@ -8,6 +8,7 @@
 /public_html/uploads/*
 !/public_html/uploads/.gitkeep
 !/public_html/uploads/.htaccess
+# /public_html/mamp
 
 # Server-side cache (health endpoint, etc.). Keep the directory.
 /cache/*
