@@ -34,7 +34,12 @@ if ($category) {
 renderHeader($title, $currentUser);
 ?>
 <section class="panel">
-    <h2><i class="bi bi-collection"></i> <?= e($title) ?></h2>
+    <div class="list-head">
+        <h2><i class="bi bi-collection"></i> <?= e($title) ?></h2>
+        <?php if ($currentUser && $auth->can('article.create')): ?>
+            <a class="btn-primary" href="/admin/article-edit"><i class="bi bi-plus-lg"></i> New article</a>
+        <?php endif; ?>
+    </div>
     <?php if (!$items): ?>
         <p class="empty-state"><i class="bi bi-inbox"></i> No articles published yet.</p>
     <?php else: ?>

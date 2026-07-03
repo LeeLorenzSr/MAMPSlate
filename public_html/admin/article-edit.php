@@ -183,16 +183,31 @@ renderHeader($isNew ? 'New article' : 'Edit article', $currentUser);
             <textarea name="summary" rows="2" maxlength="500"><?= e($article['summary']) ?></textarea>
         </label>
 
-        <label>
-            Body (Markdown)
-            <textarea name="body_markdown" id="body-markdown" rows="18" required><?= e($article['body_markdown']) ?></textarea>
-        </label>
-
-        <div class="editor-tools">
-            <button type="button" id="preview-btn" data-preview-url="/admin/article-preview">Preview</button>
-            <button type="button" id="edit-btn" hidden>Edit</button>
+        <label for="body-markdown">Body (Markdown)</label>
+        <div class="wysiwyg" data-preview-url="/admin/article-preview">
+            <div class="editor-toolbar" role="toolbar" aria-label="Formatting">
+                <button type="button" data-md="h1" title="Heading 1"><i class="bi bi-type-h1"></i></button>
+                <button type="button" data-md="h2" title="Heading 2"><i class="bi bi-type-h2"></i></button>
+                <span class="tb-sep"></span>
+                <button type="button" data-md="bold" title="Bold (Ctrl+B)"><i class="bi bi-type-bold"></i></button>
+                <button type="button" data-md="italic" title="Italic (Ctrl+I)"><i class="bi bi-type-italic"></i></button>
+                <button type="button" data-md="code" title="Inline code"><i class="bi bi-code"></i></button>
+                <span class="tb-sep"></span>
+                <button type="button" data-md="quote" title="Quote"><i class="bi bi-quote"></i></button>
+                <button type="button" data-md="ul" title="Bulleted list"><i class="bi bi-list-ul"></i></button>
+                <button type="button" data-md="ol" title="Numbered list"><i class="bi bi-list-ol"></i></button>
+                <span class="tb-sep"></span>
+                <button type="button" data-md="link" title="Link (Ctrl+K)"><i class="bi bi-link"></i></button>
+                <button type="button" data-md="image" title="Image"><i class="bi bi-image"></i></button>
+                <button type="button" data-md="hr" title="Horizontal rule"><i class="bi bi-dash-lg"></i></button>
+                <span class="editor-spacer"></span>
+                <button type="button" id="preview-toggle" class="editor-toggle" title="Toggle preview"><i class="bi bi-eye"></i> Preview</button>
+            </div>
+            <div class="editor-panes">
+                <textarea name="body_markdown" id="body-markdown" rows="20" required placeholder="Write your article in Markdown…"><?= e($article['body_markdown']) ?></textarea>
+                <div id="preview-output" class="article-body editor-preview" hidden></div>
+            </div>
         </div>
-        <div id="preview-output" class="article-body" hidden></div>
 
         <div class="grid-form">
             <label>
@@ -265,7 +280,7 @@ renderHeader($isNew ? 'New article' : 'Edit article', $currentUser);
         </details>
     <?php endif; ?>
 </section>
-<script src="/assets/admin-article.js" defer></script>
+<script src="/assets/admin-article.js?v=20260702-5" defer></script>
 <?php renderFooter();
 
 function article_snapshot(array $source, array $tags): array

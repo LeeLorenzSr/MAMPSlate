@@ -1009,9 +1009,98 @@ i.bi {
 
 /* ---------- Article editor ---------- */
 .article-editor { gap: 16px; }
-.editor-tools { display: flex; gap: 8px; }
+
+/* WYSIWYG Markdown editor (toolbar + live split preview) */
+.wysiwyg {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--input-bg);
+}
+.editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+}
+.editor-toolbar button {
+    min-height: 34px;
+    min-width: 34px;
+    padding: 0 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text);
+    border-radius: 6px;
+    font-size: 1.05rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.editor-toolbar button:hover {
+    background: var(--panel);
+    border-color: var(--line);
+}
+.editor-toolbar button:active {
+    transform: none;
+}
+.tb-sep {
+    width: 1px;
+    height: 22px;
+    background: var(--line);
+    margin: 0 4px;
+}
+.editor-spacer { flex: 1; }
+.editor-toggle {
+    font-size: 0.9rem;
+    font-weight: 700;
+    min-height: 34px;
+}
+.editor-panes {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+.wysiwyg.preview-on .editor-panes {
+    grid-template-columns: 1fr 1fr;
+}
+.editor-panes textarea {
+    border: none;
+    border-radius: 0;
+    min-height: 440px;
+    background: var(--input-bg);
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 0.95rem;
+}
+.wysiwyg.preview-on .editor-panes textarea {
+    border-right: 1px solid var(--line);
+}
+.editor-preview {
+    padding: 16px 18px;
+    overflow-y: auto;
+    max-height: 640px;
+    min-height: 440px;
+    background: var(--panel);
+}
+@media (max-width: 760px) {
+    .wysiwyg.preview-on .editor-panes { grid-template-columns: 1fr; }
+    .wysiwyg.preview-on .editor-panes textarea { border-right: none; border-bottom: 1px solid var(--line); }
+}
+
 .media-picker { margin-top: 20px; }
 .media-picker .media-grid { margin-top: 12px; }
+
+/* List header (title + action) */
+.list-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.list-head h2 { margin: 0; }
 .media-insert {
     padding: 0;
     border: 1px solid var(--line);

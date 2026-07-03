@@ -164,7 +164,12 @@ final class MarkdownRenderer
         // Decode entities produced by htmlspecialchars so we can inspect the raw scheme.
         $raw = htmlspecialchars_decode($url, ENT_QUOTES);
 
-        if (preg_match('#^[a-zA-Z][a-zA-Z0-9+.\-]*:#', $raw, $m)) {
+        // Browsers strip control characters (tab, newline, CR, ...) from URLs
+        // before resolving them, so a scheme like "java\tscript:" would still
+        // execute. Strip control chars before checking so that bypass is closed.
+        $checked = preg_replace('/[\x00-\x1F\x7F]/', '', $raw);
+
+        if (preg_match('#^[a-zA-Z][a-zA-Z0-9+.\-]*:#', $checked, $m)) {
             $scheme = strtolower($m[0]);
             if (!in_array($scheme, ['http:', 'https:', 'mailto:'], true)) {
                 return null;
@@ -173,7 +178,7 @@ final class MarkdownRenderer
         }
 
         // Relative URL (path, query, fragment). Reject any embedded scheme via //.
-        if (str_starts_with($raw, '//')) {
+        if (str_starts_with($checked, '//')) {
             return null;
         }
 
