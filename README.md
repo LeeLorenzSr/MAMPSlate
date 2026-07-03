@@ -1,9 +1,17 @@
+<p align="center">
+  <img src="public_html/assets/img/logo.png" width="160" alt="MAMPSlate logo">
+</p>
+
 # MAMPSlate CMS
 
 A small, dependency-free PHP/MySQL base CMS for MAMP/LAMP. Designed to be copied
 into a new project and specialized — not forked. Server-rendered pages, PDO
 repositories, capability-based authorization, Markdown articles, a media
 library, logged-in comments, OAuth login, and SEO-friendly extensionless URLs.
+
+<p align="center">
+  <img src="public_html/assets/img/hero.jpg" alt="MAMPSlate hero banner">
+</p>
 
 See [`docs/`](docs/README.md) for full documentation, starting with
 [System Requirements](docs/requirements.md) and the
