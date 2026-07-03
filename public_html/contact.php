@@ -37,6 +37,6 @@ renderHeader('Contact', $currentUser, [
 
 <section class="panel">
     <h2><i class="bi bi-globe2"></i> Repository</h2>
-    <p class="contact-repo"><i class="bi bi-link-45deg"></i> <?= e($repoUrl) ?></p>
+    <p class="contact-repo"><i class="bi bi-link-45deg"></i> <a href="<?= e($repoUrl) ?>" rel="noopener"><?= e($repoUrl) ?></a></p>
 </section>
 <?php renderFooter();

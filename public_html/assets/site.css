@@ -1311,6 +1311,42 @@ i.bi {
     padding: 4px 10px;
     font-size: 13px;
 }
+
+/* Icon action bar (manage lists) */
+.action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.action-bar .icon-action,
+a.icon-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    min-width: 34px;
+    padding: 0 8px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.action-bar .icon-action:hover,
+a.icon-action:hover {
+    background: var(--bg);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+.icon-action.danger:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: var(--danger-bg);
+}
 .comment-cell { max-width: 360px; }
 .audit-meta {
     display: block;

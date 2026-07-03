@@ -31,7 +31,7 @@ $allCapabilities = $capabilities->allCapabilities();
 $grantedByRole = [];
 foreach ($roles as $role) {
     $grantedByRole[(int)$role['id']] = array_flip(
-        array_map('intval', $capabilities->capabilitiesForRole((int)$role['id']))
+        $capabilities->capabilityIdsForRole((int)$role['id'])
     );
 }
 

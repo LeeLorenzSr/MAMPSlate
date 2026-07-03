@@ -46,6 +46,21 @@ final class CapabilityRepository
     }
 
     /**
+     * @return int[] capability IDs granted to the role. Use this (not
+     *               capabilitiesForRole, which returns names) when you need IDs
+     *               for form state.
+     */
+    public function capabilityIdsForRole(int $roleId): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT capability_id FROM role_capabilities WHERE role_id = :role_id'
+        );
+        $stmt->execute(['role_id' => $roleId]);
+
+        return array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN));
+    }
+
+    /**
      * Replace the set of capabilities granted to a role.
      *
      * @param int[] $capabilityIds

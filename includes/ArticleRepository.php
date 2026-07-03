@@ -225,11 +225,24 @@ final class ArticleRepository
         $this->pdo->prepare('DELETE FROM articles WHERE id = :id')->execute(['id' => $id]);
     }
 
+    /**
+     * Mark an article published, setting published_at to now if not already set.
+     */
+    public function publish(int $id): void
+    {
+        $this->pdo->prepare(
+            "UPDATE articles
+             SET status = 'published',
+                 published_at = COALESCE(published_at, CURRENT_TIMESTAMP)
+             WHERE id = :id"
+        )->execute(['id' => $id]);
+    }
+
     public function listForAdmin(): array
     {
         return $this->pdo->query(
             'SELECT articles.id, articles.title, articles.slug, articles.status,
-                    articles.published_at, articles.updated_at,
+                    articles.published_at, articles.updated_at, articles.author_user_id,
                     users.display_name AS author_name,
                     categories.name AS category_name
              FROM articles

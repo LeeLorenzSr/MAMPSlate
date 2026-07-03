@@ -58,7 +58,10 @@ renderHeader('Pages', $currentUser);
             <tbody>
                 <?php foreach ($allPages as $p): ?>
                     <tr>
-                        <td><?= e($p['title']) ?></td>
+                        <td>
+                            <?php $pageUrl = $p['status'] === 'published' ? '/pages/' . $p['slug'] : '/admin/page-edit?id=' . (int)$p['id']; ?>
+                            <a href="<?= e($pageUrl) ?>"><?= e($p['title']) ?></a>
+                        </td>
                         <td><?= e($p['status']) ?></td>
                         <td><?= e($p['author_name']) ?></td>
                         <td><?= e($p['updated_at']) ?></td>
