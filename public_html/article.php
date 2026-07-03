@@ -85,6 +85,8 @@ if ($ogImage) {
     $jsonLd['image'] = $ogImage;
 }
 
+$readMinutes = max(1, (int)ceil(str_word_count((string)$article['body_markdown']) / 200));
+
 renderHeader(
     $article['meta_title'] !== '' ? $article['meta_title'] : $article['title'],
     $currentUser,
@@ -93,20 +95,31 @@ renderHeader(
         'canonical' => '/articles/' . $article['slug'],
         'og_type' => 'article',
         'og_image' => $ogImage,
+        'hide_h1' => true,
         'jsonLd' => $jsonLd,
     ]
 );
 ?>
 <article class="article-view">
-    <?php if ($article['category_name']): ?>
-        <p class="muted"><a href="/category/<?= e($article['category_slug']) ?>"><?= e($article['category_name']) ?></a></p>
-    <?php endif; ?>
-    <h2><?= e($article['title']) ?></h2>
-    <p class="muted">by <?= e($article['author_name']) ?>
-        <?php if ($article['published_at']): ?>
-            on <time datetime="<?= e(date('c', strtotime($article['published_at']))) ?>"><?= e(date('M j, Y', strtotime($article['published_at']))) ?></time>
+    <header class="article-header">
+        <?php if ($article['category_name']): ?>
+            <a class="article-category" href="/category/<?= e($article['category_slug']) ?>"><?= e($article['category_name']) ?></a>
         <?php endif; ?>
-    </p>
+        <h1 class="article-title"><?= e($article['title']) ?></h1>
+        <div class="article-byline">
+            <?php renderAvatar(['display_name' => $article['author_name'], 'avatar' => $article['author_avatar'] ?? null], 40) ?>
+            <div class="byline-meta">
+                <span class="byline-author"><?= e($article['author_name']) ?></span>
+                <span class="muted byline-details">
+                    <?php if ($article['published_at']): ?>
+                        <time datetime="<?= e(date('c', strtotime($article['published_at']))) ?>"><?= e(date('M j, Y', strtotime($article['published_at']))) ?></time>
+                    <?php endif; ?>
+                    <span class="dot" aria-hidden="true">·</span>
+                    <span><i class="bi bi-clock"></i> <?= (int)$readMinutes ?> min read</span>
+                </span>
+            </div>
+        </div>
+    </header>
 
     <img class="article-cover" src="<?= e($coverSrc) ?>" alt="<?= e($coverAlt) ?>">
 
@@ -115,11 +128,12 @@ renderHeader(
     </div>
 
     <?php if ($tags): ?>
-        <p class="article-tags">
+        <div class="article-tags">
+            <span class="tags-label"><i class="bi bi-tags"></i></span>
             <?php foreach ($tags as $t): ?>
-                <a class="tag" href="/tag/<?= e($t['slug']) ?>">#<?= e($t['name']) ?></a>
+                <a class="tag" href="/tag/<?= e($t['slug']) ?>"><?= e($t['name']) ?></a>
             <?php endforeach; ?>
-        </p>
+        </div>
     <?php endif; ?>
 </article>
 

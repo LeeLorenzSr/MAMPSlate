@@ -112,6 +112,7 @@ final class ArticleRepository
     {
         $stmt = $this->pdo->prepare(
             'SELECT articles.*, users.display_name AS author_name, users.slug AS author_slug,
+                    users.avatar AS author_avatar,
                     categories.name AS category_name, categories.slug AS category_slug
              FROM articles
              INNER JOIN users ON users.id = articles.author_user_id
@@ -128,6 +129,7 @@ final class ArticleRepository
     {
         $stmt = $this->pdo->prepare(
             'SELECT articles.*, users.display_name AS author_name, users.slug AS author_slug,
+                    users.avatar AS author_avatar,
                     categories.name AS category_name, categories.slug AS category_slug
              FROM articles
              INNER JOIN users ON users.id = articles.author_user_id

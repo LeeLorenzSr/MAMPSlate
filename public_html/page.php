@@ -49,12 +49,13 @@ renderHeader(
         'canonical' => '/pages/' . $page['slug'],
         'og_type' => 'article',
         'og_image' => $ogImage,
+        'hide_h1' => true,
         'jsonLd' => $jsonLd,
     ]
 );
 ?>
 <article class="article-view">
-    <h2><?= e($page['title']) ?></h2>
+    <h1 class="article-title"><?= e($page['title']) ?></h1>
     <img class="article-cover" src="<?= e($coverSrc) ?>" alt="<?= e($coverAlt) ?>">
     <div class="article-body">
         <?= $page['body_html'] ?>

@@ -76,7 +76,7 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     <meta name="theme-color" content="#2458a6" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0f131a" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/assets/site.css?v=20260702-5">
+    <link rel="stylesheet" href="/assets/site.css?v=20260702-6">
     <link rel="alternate" type="application/rss+xml" title="<?= e($appName) ?>" href="<?= e($baseUrl . '/feed') ?>">
 </head>
 <body>

@@ -13,11 +13,23 @@ final class Database
             $config['charset']
         );
 
-        return new PDO($dsn, $config['user'], $config['password'], [
+        $pdo = new PDO($dsn, $config['user'], $config['password'], [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
         ]);
+
+        // Align MySQL's session timezone with PHP's so CURRENT_TIMESTAMP and
+        // date() agree. Without this, a just-published article (published_at set
+        // via PHP) can read as "in the future" to a `published_at <= CURRENT_TIMESTAMP`
+        // filter when the two clocks use different zones, hiding it from listings.
+        try {
+            $pdo->exec('SET time_zone = ' . $pdo->quote(date('P')));
+        } catch (Throwable $e) {
+            // Non-fatal: some hosts disallow setting session time_zone.
+        }
+
+        return $pdo;
     }
 
     /**
