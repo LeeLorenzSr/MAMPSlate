@@ -150,12 +150,14 @@ final class PageRepository
              WHERE pages.status = :status
                AND pages.published_at IS NOT NULL
                AND pages.published_at <= CURRENT_TIMESTAMP
-               AND (pages.title LIKE :q OR pages.summary LIKE :q OR pages.body_markdown LIKE :q)
+               AND (pages.title LIKE :q1 OR pages.summary LIKE :q2 OR pages.body_markdown LIKE :q3)
              ORDER BY pages.published_at DESC
              LIMIT :limit OFFSET :offset'
         );
         $stmt->bindValue('status', 'published');
-        $stmt->bindValue('q', $like);
+        $stmt->bindValue('q1', $like);
+        $stmt->bindValue('q2', $like);
+        $stmt->bindValue('q3', $like);
         $stmt->bindValue('limit', $perPage, PDO::PARAM_INT);
         $stmt->bindValue('offset', max(0, ($page - 1) * $perPage), PDO::PARAM_INT);
         $stmt->execute();
@@ -169,10 +171,10 @@ final class PageRepository
         $stmt = $this->pdo->prepare(
             'SELECT id, title, slug, status, updated_at
              FROM pages
-             WHERE title LIKE :q OR slug LIKE :q OR body_markdown LIKE :q
+             WHERE title LIKE :q1 OR slug LIKE :q2 OR body_markdown LIKE :q3
              ORDER BY updated_at DESC LIMIT 50'
         );
-        $stmt->execute(['q' => $like]);
+        $stmt->execute(['q1' => $like, 'q2' => $like, 'q3' => $like]);
 
         return $stmt->fetchAll();
     }

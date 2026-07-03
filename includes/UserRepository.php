@@ -91,10 +91,10 @@ final class UserRepository
                     users.created_at, user_roles.name AS role_name
              FROM users
              INNER JOIN user_roles ON user_roles.id = users.role_id
-             WHERE users.email LIKE :q OR users.display_name LIKE :q
+             WHERE users.email LIKE :q1 OR users.display_name LIKE :q2
              ORDER BY users.created_at DESC LIMIT 50'
         );
-        $stmt->execute(['q' => $like]);
+        $stmt->execute(['q1' => $like, 'q2' => $like]);
 
         return $stmt->fetchAll();
     }

@@ -64,10 +64,10 @@ final class MediaRepository
         $stmt = $this->pdo->prepare(
             'SELECT id, stored_name, original_name, mime_type, created_at
              FROM media
-             WHERE original_name LIKE :q OR alt_text LIKE :q OR title LIKE :q
+             WHERE original_name LIKE :q1 OR alt_text LIKE :q2 OR title LIKE :q3
              ORDER BY created_at DESC LIMIT 50'
         );
-        $stmt->execute(['q' => $like]);
+        $stmt->execute(['q1' => $like, 'q2' => $like, 'q3' => $like]);
 
         return $stmt->fetchAll();
     }

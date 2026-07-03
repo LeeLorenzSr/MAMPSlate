@@ -370,17 +370,21 @@ final class ArticleRepository
     {
         $like = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $query) . '%';
         $stmt = $this->pdo->prepare(
-            'SELECT articles.id, articles.title, articles.slug, articles.summary, articles.published_at
+            'SELECT articles.id, articles.title, articles.slug, articles.summary,
+                   articles.published_at, media.stored_name AS cover
              FROM articles
+             LEFT JOIN media ON media.id = articles.cover_media_id
              WHERE articles.status = :status
                AND articles.published_at IS NOT NULL
                AND articles.published_at <= CURRENT_TIMESTAMP
-               AND (articles.title LIKE :q OR articles.summary LIKE :q OR articles.body_markdown LIKE :q)
+               AND (articles.title LIKE :q1 OR articles.summary LIKE :q2 OR articles.body_markdown LIKE :q3)
              ORDER BY articles.published_at DESC
              LIMIT :limit'
         );
         $stmt->bindValue('status', 'published');
-        $stmt->bindValue('q', $like);
+        $stmt->bindValue('q1', $like);
+        $stmt->bindValue('q2', $like);
+        $stmt->bindValue('q3', $like);
         $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
 
@@ -393,10 +397,10 @@ final class ArticleRepository
         $stmt = $this->pdo->prepare(
             'SELECT articles.id, articles.title, articles.slug, articles.status, articles.updated_at
              FROM articles
-             WHERE articles.title LIKE :q OR articles.slug LIKE :q OR articles.body_markdown LIKE :q
+             WHERE articles.title LIKE :q1 OR articles.slug LIKE :q2 OR articles.body_markdown LIKE :q3
              ORDER BY articles.updated_at DESC LIMIT 50'
         );
-        $stmt->execute(['q' => $like]);
+        $stmt->execute(['q1' => $like, 'q2' => $like, 'q3' => $like]);
 
         return $stmt->fetchAll();
     }

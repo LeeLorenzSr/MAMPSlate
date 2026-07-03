@@ -13,30 +13,16 @@ $page = max(1, (int)($_GET['page'] ?? 1));
 $results = [];
 $total = 0;
 
-if ($q !== '') {
-    if (feature('articles')) {
-        foreach ($articles->searchPublished($q, 50) as $a) {
-            $results[] = [
-                'type' => 'article',
-                'title' => $a['title'],
-                'url' => '/articles/' . $a['slug'],
-                'excerpt' => $a['summary'] ?? '',
-                'date' => $a['published_at'] ?? null,
-            ];
-        }
+if ($q !== '' && feature('articles')) {
+    foreach ($articles->searchPublished($q, 50) as $a) {
+        $results[] = [
+            'title' => $a['title'],
+            'url' => '/articles/' . $a['slug'],
+            'cover' => $a['cover'] ?? null,
+            'excerpt' => $a['summary'] ?? '',
+            'date' => $a['published_at'] ?? null,
+        ];
     }
-    if (feature('pages')) {
-        foreach ($pages->searchPublished($q, 1, 50) as $p) {
-            $results[] = [
-                'type' => 'page',
-                'title' => $p['title'],
-                'url' => '/pages/' . $p['slug'],
-                'excerpt' => $p['summary'] ?? '',
-                'date' => $p['published_at'] ?? null,
-            ];
-        }
-    }
-
     // Sort by date desc.
     usort($results, fn($x, $y) => strcmp((string)($y['date'] ?? ''), (string)($x['date'] ?? '')));
     $total = count($results);
@@ -66,15 +52,18 @@ renderHeader('Search', $currentUser);
     <?php else: ?>
         <div class="article-list">
             <?php foreach ($results as $r): ?>
+                <?php $cardCover = !empty($r['cover']) ? '/uploads/' . $r['cover'] : '/assets/img/default-cover.jpg'; ?>
                 <article class="article-card">
+                    <a class="article-card-cover" href="<?= e($r['url']) ?>">
+                        <img src="<?= e($cardCover) ?>" alt="<?= e($r['title']) ?>" loading="lazy">
+                    </a>
                     <div class="article-card-body">
-                        <p class="muted"><?= e(ucfirst($r['type'])) ?></p>
                         <h3><a href="<?= e($r['url']) ?>"><?= e($r['title']) ?></a></h3>
                         <?php if ($r['excerpt']): ?>
                             <p><?= e(mb_strimwidth($r['excerpt'], 0, 200, '…')) ?></p>
                         <?php endif; ?>
                         <?php if ($r['date']): ?>
-                            <p class="muted"><?= e(date('M j, Y', strtotime($r['date']))) ?></p>
+                            <p class="muted"><i class="bi bi-calendar3"></i> <?= e(date('M j, Y', strtotime($r['date']))) ?></p>
                         <?php endif; ?>
                     </div>
                 </article>
