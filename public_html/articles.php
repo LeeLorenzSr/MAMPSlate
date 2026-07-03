@@ -36,9 +36,15 @@ renderHeader($title, $currentUser);
 <section class="panel">
     <div class="list-head">
         <h2><i class="bi bi-collection"></i> <?= e($title) ?></h2>
-        <?php if ($currentUser && $auth->can('article.create')): ?>
-            <a class="btn-primary" href="/admin/article-edit"><i class="bi bi-plus-lg"></i> New article</a>
-        <?php endif; ?>
+        <div class="list-actions">
+            <form method="get" action="/search" class="inline-search">
+                <input type="search" name="q" placeholder="Search articles…" aria-label="Search articles">
+                <button type="submit" aria-label="Search"><i class="bi bi-search"></i></button>
+            </form>
+            <?php if ($currentUser && $auth->can('article.create')): ?>
+                <a class="btn-primary" href="/admin/article-edit"><i class="bi bi-plus-lg"></i> New article</a>
+            <?php endif; ?>
+        </div>
     </div>
     <?php if (!$items): ?>
         <p class="empty-state"><i class="bi bi-inbox"></i> No articles published yet.</p>

@@ -76,7 +76,7 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     <meta name="theme-color" content="#2458a6" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0f131a" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/assets/site.css?v=20260702-6">
+    <link rel="stylesheet" href="/assets/site.css?v=20260702-7">
     <link rel="alternate" type="application/rss+xml" title="<?= e($appName) ?>" href="<?= e($baseUrl . '/feed') ?>">
 </head>
 <body>
@@ -93,6 +93,7 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     </nav>
     <?php endif; ?>
     <div class="header-right">
+        <a href="/search" class="icon-btn" aria-label="Search" title="Search"><i class="bi bi-search"></i></a>
         <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle theme"></button>
         <?php if ($user): ?>
             <a class="header-avatar" href="/profile" title="Your profile"><?php renderAvatar($user, 32) ?></a>

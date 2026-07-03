@@ -1178,6 +1178,49 @@ i.bi {
     margin-bottom: 16px;
 }
 .list-head h2 { margin: 0; }
+
+/* Header icon link + inline search */
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    min-width: 38px;
+    padding: 0 9px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.icon-btn:hover {
+    background: var(--bg);
+    border-color: var(--primary);
+    color: var(--text);
+}
+
+.list-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.inline-search {
+    display: flex;
+}
+.inline-search input {
+    width: auto;
+    min-width: 220px;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+.inline-search button {
+    min-height: 42px;
+    padding: 0 14px;
+    margin: 0;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
 .media-insert {
     padding: 0;
     border: 1px solid var(--line);
