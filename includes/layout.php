@@ -76,7 +76,7 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     <meta name="theme-color" content="#2458a6" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0f131a" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/assets/site.css?v=20260702-2">
+    <link rel="stylesheet" href="/assets/site.css?v=20260702-4">
     <link rel="alternate" type="application/rss+xml" title="<?= e($appName) ?>" href="<?= e($baseUrl . '/feed') ?>">
 </head>
 <body>
@@ -94,14 +94,27 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     <?php endif; ?>
     <div class="header-right">
         <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle theme"></button>
-        <?php if (feature('articles')): ?>
-            <a href="/articles" class="nav-link"><i class="bi bi-collection"></i> Articles</a>
-        <?php endif; ?>
         <?php if ($user): ?>
             <a class="header-avatar" href="/profile" title="Your profile"><?php renderAvatar($user, 32) ?></a>
-            <nav class="nav">
-                <a href="/profile"><i class="bi bi-person"></i> Profile</a>
+        <?php else: ?>
+            <button type="button" class="auth-trigger" aria-haspopup="dialog"><i class="bi bi-box-arrow-in-right"></i> Sign in</button>
+        <?php endif; ?>
+        <?php $hasMenu = $user || feature('articles'); ?>
+        <?php if ($hasMenu): ?>
+        <button type="button" class="menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-menu">
+            <i class="bi bi-list"></i>
+        </button>
+        <?php endif; ?>
+    </div>
+    <?php if ($hasMenu): ?>
+    <div class="menu-dropdown" id="site-menu" hidden>
+        <nav class="menu-vertical" aria-label="Account and navigation">
+            <?php if (feature('articles')): ?>
+                <a href="/articles"><i class="bi bi-collection"></i> Articles</a>
+            <?php endif; ?>
+            <?php if ($user): ?>
                 <?php $caps = $user['_capabilities'] ?? []; ?>
+                <a href="/profile"><i class="bi bi-person"></i> Profile</a>
                 <?php if ($GLOBALS['auth']->canAccessAdmin()): ?>
                     <a href="/admin"><i class="bi bi-speedometer2"></i> Dashboard</a>
                     <a href="/admin/search"><i class="bi bi-search"></i> Search</a>
@@ -138,15 +151,11 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
                 <?php if (in_array('audit.view', $caps, true)): ?>
                     <a href="/admin/audit-log"><i class="bi bi-clipboard-data"></i> Audit log</a>
                 <?php endif; ?>
-                <?php if (in_array('audit.view', $caps, true)): ?>
-                    <a href="/admin/audit-log"><i class="bi bi-clipboard-data"></i> Audit log</a>
-                <?php endif; ?>
                 <a href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
-            </nav>
-        <?php else: ?>
-            <button type="button" class="auth-trigger" aria-haspopup="dialog"><i class="bi bi-box-arrow-in-right"></i> Sign in</button>
-        <?php endif; ?>
+            <?php endif; ?>
+        </nav>
     </div>
+    <?php endif; ?>
 </header>
 <?php if (!$user): ?>
     <?php renderAuthModal(); ?>
@@ -255,17 +264,17 @@ function renderFooter(): void
 </main>
 <footer class="site-footer">
     <div class="footer-inner">
-        <?php if ($footerMenu): ?>
         <nav class="menu-footer" aria-label="Footer">
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
             <?php foreach ($footerMenu as $item): ?>
                 <a href="<?= e($item['url']) ?>"><?= e($item['label']) ?></a>
             <?php endforeach; ?>
         </nav>
-        <?php endif; ?>
         <p class="muted"><i class="bi bi-globe2"></i> &copy; <?= e(date('Y')) ?> <?= e($appName) ?></p>
     </div>
 </footer>
-<script src="/assets/theme.js" defer></script>
+<script src="/assets/theme.js?v=20260702-3" defer></script>
 <script nonce="<?= e($nonce) ?>">
     (function () {
         document.querySelectorAll('[data-confirm]').forEach(function (el) {

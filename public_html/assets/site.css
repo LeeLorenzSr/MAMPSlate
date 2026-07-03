@@ -218,6 +218,180 @@ h2 {
     color: var(--primary);
 }
 
+/* ---------- Hamburger / dropdown menu ---------- */
+.menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    min-width: 38px;
+    padding: 0 9px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.menu-toggle:hover {
+    background: var(--bg);
+    border-color: var(--primary);
+}
+.menu-toggle[aria-expanded="true"] {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+}
+
+.menu-dropdown {
+    position: absolute;
+    top: calc(100% - 1px);
+    right: 16px;
+    z-index: 200;
+    width: min(280px, calc(100% - 32px));
+    padding: 8px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+}
+.menu-dropdown[hidden] { display: none; }
+
+.menu-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.menu-vertical a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.menu-vertical a:hover {
+    background: var(--bg);
+    color: var(--primary);
+}
+.menu-vertical a .bi {
+    font-size: 1.05rem;
+    width: 1.25em;
+    text-align: center;
+}
+
+/* ---------- Themed content pages (About, Contact) ---------- */
+.hero--centered .hero-inner {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+}
+.hero--centered .hero-copy {
+    max-width: 680px;
+}
+.hero-logo {
+    width: 72px;
+    height: 72px;
+    margin: 0 0 18px;
+    object-fit: contain;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+}
+.feature-grid li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+}
+.feature-grid .bi {
+    color: var(--primary);
+    font-size: 1.15rem;
+    margin-top: 2px;
+}
+
+.cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    background: var(--primary);
+    border: 1px solid var(--primary);
+    color: #ffffff;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+}
+.btn-primary:hover {
+    background: var(--primary-dark);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
+}
+.btn-outline:hover {
+    background: var(--primary);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.contact-banner {
+    width: 100%;
+    max-height: 260px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin: 0 0 20px;
+    display: block;
+}
+
+.contact-repo {
+    font-family: Consolas, "Courier New", monospace;
+    word-break: break-all;
+    font-size: 0.95rem;
+}
+.contact-repo .bi {
+    color: var(--primary);
+    margin-right: 6px;
+}
+
 /* ---------- Footer ---------- */
 .site-footer {
     margin-top: 48px;

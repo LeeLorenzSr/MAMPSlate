@@ -70,7 +70,7 @@ if (!$setupEnabled) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Setup disabled | MAMPSlate CMS</title>
     <?php setup_head_icons(); ?>
-    <link rel="stylesheet" href="/assets/site.css?v=20260702">
+    <link rel="stylesheet" href="/assets/site.css?v=20260702-4">
 </head>
 <body>
 <header class="site-header">
@@ -389,7 +389,7 @@ $baseUrl = detect_base_url();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Setup | MAMPSlate CMS</title>
     <?php setup_head_icons(); ?>
-    <link rel="stylesheet" href="/assets/site.css?v=20260702">
+    <link rel="stylesheet" href="/assets/site.css?v=20260702-4">
     <style>
         .setup-wrap { max-width: 720px; margin: 32px auto; padding: 0 16px; }
         .setup-step { margin-bottom: 28px; }
