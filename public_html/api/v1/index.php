@@ -91,6 +91,28 @@ function media_out(array $m): array
     ];
 }
 
+function listing_out(array $l): array
+{
+    return [
+        'id' => (int)$l['id'],
+        'title' => $l['title'],
+        'slug' => $l['slug'],
+        'summary' => (string)($l['summary'] ?? ''),
+        'status' => $l['status'],
+        'body_markdown' => $l['body_markdown'] ?? '',
+        'body_html' => $l['body_html'] ?? '',
+        'image_media_id' => !empty($l['image_media_id']) ? (int)$l['image_media_id'] : null,
+        'owner_user_id' => !empty($l['owner_user_id']) ? (int)$l['owner_user_id'] : null,
+        'owner_name' => $l['owner_name'] ?? null,
+        'links' => $l['links'] ?? [],
+        'tags' => $l['tags'] ?? [],
+        'meta_title' => $l['meta_title'] ?? '',
+        'meta_description' => $l['meta_description'] ?? '',
+        'published_at' => $l['published_at'] ?? null,
+        'updated_at' => $l['updated_at'] ?? null,
+    ];
+}
+
 // ---- auth ------------------------------------------------------------------
 $apiUser = $apiAuth->authenticateRequest();
 if (!$apiUser) {
@@ -128,12 +150,113 @@ switch ($resource) {
         requireFeature('media');
         route_media($method, $id);
         break;
+    case 'listings':
+        requireFeature('listings');
+        route_listings($method, $id);
+        break;
     case 'comments':
         requireFeature('comments');
         route_comments($method, $id);
         break;
     default:
         api_error(404, 'not_found', "Unknown resource: {$resource}");
+}
+
+// ---- listings -------------------------------------------------------------
+function route_listings(string $method, ?int $id): void
+{
+    global $listings, $apiUser, $api_can;
+
+    if ($method === 'GET' && $id === null) {
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = min(100, max(1, (int)($_GET['per_page'] ?? 20)));
+        $tag = isset($_GET['tag']) ? trim((string)$_GET['tag']) : null;
+        $items = $listings->listPublished($page, $perPage, $tag);
+        $total = $listings->countPublished($tag);
+        api_list(array_map('listing_out', $items), $page, $perPage, $total);
+    }
+
+    if ($method === 'GET' && $id !== null) {
+        $item = $listings->findById($id);
+        if (!$item) {
+            api_error(404, 'not_found', 'Listing not found.');
+        }
+        if ($item['status'] !== 'published' && !$api_can('listing.manage')) {
+            api_error(403, 'forbidden', 'You may only view published listings.');
+        }
+        api_ok(listing_out($item));
+    }
+
+    if ($method === 'POST' && $id === null) {
+        if (!$api_can('listing.manage')) {
+            api_error(403, 'forbidden', 'Missing capability: listing.manage');
+        }
+        $body = readJsonBody();
+        $data = build_listing_data($body, (int)$apiUser['id'], null);
+        $newId = $listings->create($data);
+        api_ok(listing_out($listings->findById($newId)), 201);
+    }
+
+    if (($method === 'PATCH' || $method === 'PUT') && $id !== null) {
+        if (!$api_can('listing.manage')) {
+            api_error(403, 'forbidden', 'Missing capability: listing.manage');
+        }
+        $existing = $listings->findById($id);
+        if (!$existing) {
+            api_error(404, 'not_found', 'Listing not found.');
+        }
+        $data = build_listing_data(readJsonBody(), (int)$apiUser['id'], $existing);
+        $listings->update($id, $data);
+        api_ok(listing_out($listings->findById($id)));
+    }
+
+    if ($method === 'DELETE' && $id !== null) {
+        if (!$api_can('listing.manage')) {
+            api_error(403, 'forbidden', 'Missing capability: listing.manage');
+        }
+        $listings->delete($id);
+        api_ok(['deleted' => true, 'id' => $id]);
+    }
+
+    api_error(405, 'method_not_allowed', 'Method not allowed on this resource.');
+}
+
+function build_listing_data(array $body, int $actorId, ?array $existing): array
+{
+    $title = trim((string)($body['title'] ?? ($existing['title'] ?? '')));
+    if ($title === '') {
+        api_error(422, 'validation', 'Title is required.');
+    }
+    $bodyMarkdown = (string)($body['body_markdown'] ?? ($existing['body_markdown'] ?? ''));
+    if (trim($bodyMarkdown) === '') {
+        api_error(422, 'validation', 'body_markdown is required.');
+    }
+    $slug = trim((string)($body['slug'] ?? '')) ?: ($existing['slug'] ?? Slug::slugify($title));
+    $slug = Slug::ensureUnique(fn($s, $ex) => $GLOBALS['listings']->slugExists($s, $ex), Slug::slugify($slug), $existing ? (int)$existing['id'] : null);
+
+    $status = (string)($body['status'] ?? ($existing['status'] ?? 'draft'));
+    if (!in_array($status, ['draft', 'published', 'archived'], true)) {
+        $status = 'draft';
+    }
+    $publishedAt = $existing['published_at'] ?? null;
+    if ($status === 'published' && $publishedAt === null) {
+        $publishedAt = date('Y-m-d H:i:s');
+    }
+
+    return [
+        'title' => $title,
+        'slug' => $slug,
+        'summary' => isset($body['summary']) ? (string)$body['summary'] : ($existing['summary'] ?? ''),
+        'body_markdown' => $bodyMarkdown,
+        'status' => $status,
+        'image_media_id' => isset($body['image_media_id']) ? (int)$body['image_media_id'] : ($existing['image_media_id'] ?? null),
+        'owner_user_id' => isset($body['owner_user_id']) ? (int)$body['owner_user_id'] : ($existing['owner_user_id'] ?? $actorId),
+        'links' => is_array($body['links'] ?? null) ? $body['links'] : ($existing['links'] ?? []),
+        'tags' => is_array($body['tags'] ?? null) ? array_map('strval', $body['tags']) : ($existing['tags'] ?? []),
+        'meta_title' => isset($body['meta_title']) ? (string)$body['meta_title'] : ($existing['meta_title'] ?? ''),
+        'meta_description' => isset($body['meta_description']) ? (string)$body['meta_description'] : ($existing['meta_description'] ?? ''),
+        'published_at' => $publishedAt,
+    ];
 }
 
 // ---- articles --------------------------------------------------------------

@@ -203,6 +203,7 @@ final class CmsMcpTools
             'features' => [
                 'articles' => feature('articles'), 'pages' => feature('pages'),
                 'media' => feature('media'), 'comments' => feature('comments'),
+                'listings' => feature('listings'), 'contact_forms' => feature('contact_forms'),
             ],
         ];
     }
@@ -319,6 +320,7 @@ final class CmsMcpTools
                 'articles' => feature('articles'), 'pages' => feature('pages'),
                 'media' => feature('media'), 'comments' => feature('comments'),
                 'categories' => feature('categories'), 'tags' => feature('tags'),
+                'listings' => feature('listings'), 'contact_forms' => feature('contact_forms'),
                 'seo_sitemap' => feature('seo_sitemap'), 'rss_feed' => feature('rss_feed'),
             ],
         ];

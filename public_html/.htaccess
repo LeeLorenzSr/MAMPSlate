@@ -14,6 +14,8 @@ DirectoryIndex index.php
     # Content routes
     RewriteRule ^articles$                articles.php [L]
     RewriteRule ^articles/([a-z0-9-]+)$   article.php?slug=$1 [L]
+    RewriteRule ^listings$                listings.php [L]
+    RewriteRule ^listings/([a-z0-9-]+)$   listing.php?slug=$1 [L]
     RewriteRule ^pages/([a-z0-9-]+)$      page.php?slug=$1 [L]
     RewriteRule ^user/([a-z0-9-]+)$       user.php?slug=$1 [QSA,L]
     RewriteRule ^category/([a-z0-9-]+)$   articles.php?category=$1 [L]

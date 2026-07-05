@@ -35,7 +35,7 @@ See [`docs/`](docs/README.md) for full documentation, starting with
    created.
 
 Prefer the manual route? Create the database and a least-privilege MySQL user,
-apply `sql_init/001`–`010`, and copy `config/config.example.php` →
+apply `sql_init/001`–`021`, and copy `config/config.example.php` →
 `config/config.local.php` with credentials.
 
 ## Layout
@@ -60,7 +60,7 @@ docs/          specifications and operating notes
 - SEO: sitemap, robots, RSS, Open Graph, JSON-LD
 - Light/dark theme toggle
 - Security hardening: audit log, password reset, rate limiting, CSP/security headers, mailer abstraction
-- Content revisions (history + restore), migration runner, versioned CRUD API v1
+- Content revisions (history + restore), migration runner, verification runner, versioned CRUD API v1
 - Media usage tracking + orphan cleanup; backup/restore runbook + CLI helpers
 - Feature toggles in `config` to disable unused subsystems
 - Extension checklist for AI-agent specialization (`docs/extending-the-cms.md`)

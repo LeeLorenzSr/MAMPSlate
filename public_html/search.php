@@ -13,12 +13,34 @@ $page = max(1, (int)($_GET['page'] ?? 1));
 $results = [];
 $total = 0;
 
-if ($q !== '' && feature('articles')) {
-    foreach ($articles->searchPublished($q, 50) as $a) {
+if ($q !== '') {
+    if (feature('articles')) {
+        foreach ($articles->searchPublished($q, 50) as $a) {
+            $results[] = [
+                'title' => $a['title'],
+                'url' => '/articles/' . $a['slug'],
+                'cover' => $a['cover'] ?? null,
+                'excerpt' => $a['summary'] ?? '',
+                'date' => $a['published_at'] ?? null,
+            ];
+        }
+    }
+    if (feature('listings')) {
+        foreach ($listings->searchPublished($q, 50) as $a) {
+            $results[] = [
+                'title' => $a['title'],
+                'url' => '/listings/' . $a['slug'],
+                'cover' => $a['image'] ?? null,
+                'excerpt' => $a['summary'] ?? '',
+                'date' => $a['published_at'] ?? null,
+            ];
+        }
+    }
+    foreach (feature('pages') ? $pages->searchPublished($q, 1, 50) : [] as $a) {
         $results[] = [
             'title' => $a['title'],
-            'url' => '/articles/' . $a['slug'],
-            'cover' => $a['cover'] ?? null,
+            'url' => '/pages/' . $a['slug'],
+            'cover' => null,
             'excerpt' => $a['summary'] ?? '',
             'date' => $a['published_at'] ?? null,
         ];

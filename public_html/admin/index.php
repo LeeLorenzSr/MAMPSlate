@@ -13,11 +13,13 @@ if (!$auth->canAccessAdmin()) {
 $articleCounts = feature('articles') ? $articles->countByStatus() : ['draft' => 0, 'published' => 0, 'archived' => 0];
 $pageCounts = feature('pages') ? $pages->countByStatus() : ['draft' => 0, 'published' => 0, 'archived' => 0];
 $pendingComments = feature('comments') ? $comments->countPending() : 0;
+$pendingContact = feature('contact_forms') ? $contacts->countPending() : 0;
 $recentComments = feature('comments') ? $comments->recent(5) : [];
 $recentUsers = $users->recent(5);
 $recentAudit = $auth->can('audit.view') ? $audit->list([], 1, 5) : [];
 $mediaCount = feature('media') ? $media->count() : 0;
 $mediaStorage = feature('media') ? $media->totalStorage() : 0;
+$listingCounts = feature('listings') ? $listings->countByStatus() : ['draft' => 0, 'published' => 0, 'archived' => 0];
 
 renderHeader('Dashboard', $currentUser);
 ?>
@@ -40,6 +42,26 @@ renderHeader('Dashboard', $currentUser);
             <p><?= (int)$pageCounts['published'] ?> published · <?= (int)$pageCounts['draft'] ?> draft · <?= (int)$pageCounts['archived'] ?> archived</p>
             <?php if ($auth->can('page.create')): ?>
                 <p><a href="/admin/pages">Manage pages →</a></p>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+
+        <?php if (feature('listings')): ?>
+        <div class="dash-card">
+            <h3>Listings</h3>
+            <p><?= (int)$listingCounts['published'] ?> published Â· <?= (int)$listingCounts['draft'] ?> draft Â· <?= (int)$listingCounts['archived'] ?> archived</p>
+            <?php if ($auth->can('listing.manage')): ?>
+                <p><a href="/admin/listings">Manage listings â†’</a></p>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+
+        <?php if (feature('contact_forms')): ?>
+        <div class="dash-card">
+            <h3>Contact</h3>
+            <p><?= (int)$pendingContact ?> pending submissions</p>
+            <?php if ($auth->can('contact.manage')): ?>
+                <p><a href="/admin/contact-submissions">Review submissions â†’</a></p>
             <?php endif; ?>
         </div>
         <?php endif; ?>

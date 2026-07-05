@@ -34,6 +34,12 @@ capabilities are.
 | `audit.view`           | View the audit log                           |
 | `menu.manage`          | Manage navigation menus                      |
 | `settings.manage`      | Manage non-secret site settings              |
+| `listing.manage`       | Manage generic directory listings            |
+| `contact.manage`       | Manage contact forms and submissions         |
+| `system.view`          | View system status diagnostics               |
+| `backup.manage`        | Trigger and download guarded backups         |
+| `export.manage`        | Export site data                             |
+| `demo.manage`          | Seed optional demo content                   |
 
 ## Default grants (seeded by `sql_init/004_capabilities.sql`)
 
@@ -44,6 +50,9 @@ capabilities are.
   `comment.moderate`, `comment.create`, `apikey.own`.
 - **viewer**, **user**: `comment.create`, `comment.edit.own`,
   `comment.delete.own`.
+- `sql_init/020_starter_subsystems.sql` also grants `listing.manage`,
+  `contact.manage`, `system.view`, `backup.manage`, `export.manage`, and
+  `demo.manage` to administrators.
 
 > API key access is split: `apikey.own` lets a user create/revoke their **own**
 > keys on `/profile`; `apikey.manage` lets an administrator manage **all** keys

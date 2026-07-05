@@ -113,6 +113,9 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
             <?php if (feature('articles')): ?>
                 <a href="/articles"><i class="bi bi-collection"></i> Articles</a>
             <?php endif; ?>
+            <?php if (feature('listings')): ?>
+                <a href="/listings"><i class="bi bi-card-list"></i> Listings</a>
+            <?php endif; ?>
             <?php if ($user): ?>
                 <?php $caps = $user['_capabilities'] ?? []; ?>
                 <a href="/profile"><i class="bi bi-person"></i> Profile</a>
@@ -125,6 +128,12 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
                 <?php endif; ?>
                 <?php if (in_array('page.create', $caps, true) && feature('pages')): ?>
                     <a href="/admin/pages"><i class="bi bi-file-earmark"></i> Pages</a>
+                <?php endif; ?>
+                <?php if (in_array('listing.manage', $caps, true) && feature('listings')): ?>
+                    <a href="/admin/listings"><i class="bi bi-card-list"></i> Listings</a>
+                <?php endif; ?>
+                <?php if (in_array('contact.manage', $caps, true) && feature('contact_forms')): ?>
+                    <a href="/admin/contact-submissions"><i class="bi bi-envelope"></i> Contact</a>
                 <?php endif; ?>
                 <?php if (in_array('user.manage', $caps, true)): ?>
                     <a href="/admin/users"><i class="bi bi-people"></i> Users</a>
@@ -148,6 +157,18 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
                 <?php if (in_array('settings.manage', $caps, true)): ?>
                     <a href="/admin/settings"><i class="bi bi-gear"></i> Settings</a>
                     <a href="/admin/migrations"><i class="bi bi-database-up"></i> Migrations</a>
+                <?php endif; ?>
+                <?php if (in_array('system.view', $caps, true)): ?>
+                    <a href="/admin/system-status"><i class="bi bi-activity"></i> System status</a>
+                <?php endif; ?>
+                <?php if (in_array('export.manage', $caps, true)): ?>
+                    <a href="/admin/exports"><i class="bi bi-download"></i> Exports</a>
+                <?php endif; ?>
+                <?php if (in_array('backup.manage', $caps, true)): ?>
+                    <a href="/admin/backups"><i class="bi bi-archive"></i> Backups</a>
+                <?php endif; ?>
+                <?php if (in_array('demo.manage', $caps, true)): ?>
+                    <a href="/admin/demo-content"><i class="bi bi-stars"></i> Demo content</a>
                 <?php endif; ?>
                 <?php if (in_array('audit.view', $caps, true)): ?>
                     <a href="/admin/audit-log"><i class="bi bi-clipboard-data"></i> Audit log</a>

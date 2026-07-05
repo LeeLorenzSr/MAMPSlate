@@ -80,6 +80,7 @@ final class SettingsRepository
             'media_max_upload_bytes' => (string)($app['media_max_upload_bytes'] ?? 5242880),
             'media_image_max_width' => (string)($app['media_image_max_width'] ?? 1600),
             'app.base_url' => $app['base_url'] ?? null,
+            'contact_require_moderation' => '1',
             default => str_starts_with($key, 'features.')
                 ? (array_key_exists(substr($key, 9), $features) ? ($features[substr($key, 9)] ? '1' : '0') : '1')
                 : null,

@@ -137,6 +137,40 @@ paths:
       - { in: path, name: id, required: true, schema: { type: integer } }
     get: { summary: Get one media, responses: { "200": { description: Media } } }
     delete: { summary: Delete media, responses: { "200": { description: Deleted } } }
+  /listings:
+    get:
+      summary: List published listings
+      parameters:
+        - { in: query, name: page, schema: { type: integer } }
+        - { in: query, name: per_page, schema: { type: integer, maximum: 100 } }
+        - { in: query, name: tag, schema: { type: string } }
+      responses: { "200": { description: Paginated list } }
+    post:
+      summary: Create a listing (requires listing.manage)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                body_markdown: { type: string }
+                slug: { type: string }
+                summary: { type: string }
+                status: { type: string, enum: [draft, published, archived] }
+                image_media_id: { type: integer, nullable: true }
+                owner_user_id: { type: integer, nullable: true }
+                links: { type: array, items: { type: object } }
+                tags: { type: array, items: { type: string } }
+                meta_title: { type: string }
+                meta_description: { type: string }
+      responses: { "201": { description: Created } }
+  /listings/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    get: { summary: Get one listing, responses: { "200": { description: Listing } } }
+    patch: { summary: Update a listing, responses: { "200": { description: Updated } } }
+    delete: { summary: Delete a listing, responses: { "200": { description: Deleted } } }
   /comments:
     get:
       summary: List comments for moderation (requires comment.moderate)

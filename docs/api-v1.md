@@ -133,6 +133,24 @@ curl -X POST http://localhost/api/v1/media \
   -F "file=@/path/to/image.jpg"
 ```
 
+### Listings
+
+| Method | Path                    | Capability | Notes |
+|--------|-------------------------|------------|-------|
+| GET    | `/api/v1/listings`      | (any authenticated) | Published only. Optional `?tag=`. |
+| GET    | `/api/v1/listings/{id}` | (any) for published; `listing.manage` otherwise | |
+| POST   | `/api/v1/listings`      | `listing.manage` | Creates a listing. |
+| PATCH  | `/api/v1/listings/{id}` | `listing.manage` | |
+| DELETE | `/api/v1/listings/{id}` | `listing.manage` | |
+
+Listing object: `id, title, slug, summary, status, body_markdown, body_html,
+image_media_id, owner_user_id, owner_name, links, tags, meta_title,
+meta_description, published_at, updated_at`.
+
+Write fields: `title`, `body_markdown`, `slug`, `summary`, `status`,
+`image_media_id`, `owner_user_id`, `links` (array of `{label,url}`), `tags`
+(array of strings), `meta_title`, `meta_description`.
+
 ### Comments
 
 | Method | Path                       | Capability        | Notes |

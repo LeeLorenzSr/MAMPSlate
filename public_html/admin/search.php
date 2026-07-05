@@ -24,6 +24,11 @@ if ($q !== '') {
             $results[] = ['type' => 'Page', 'label' => $p['title'], 'url' => '/admin/page-edit?id=' . (int)$p['id'], 'meta' => $p['status']];
         }
     }
+    if ($auth->can('listing.manage') && feature('listings')) {
+        foreach ($listings->searchAdmin($q) as $l) {
+            $results[] = ['type' => 'Listing', 'label' => $l['title'], 'url' => '/admin/listing-edit?id=' . (int)$l['id'], 'meta' => $l['status']];
+        }
+    }
     if ($auth->can('media.upload') && feature('media')) {
         foreach ($media->searchAdmin($q) as $m) {
             $results[] = ['type' => 'Media', 'label' => $m['original_name'], 'url' => '/uploads/' . $m['stored_name'], 'meta' => $m['mime_type']];

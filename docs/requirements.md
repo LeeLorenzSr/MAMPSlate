@@ -69,7 +69,7 @@ Or via a `phpinfo()` page in `public_html/`. Confirm at least: `pdo_mysql`,
     used extensively.
 - The application performs **no DDL at runtime**. The database user needs only
   `SELECT, INSERT, UPDATE, DELETE` on the CMS database. Apply schema/migration
-  scripts (`sql_init/001`–`007`) as a separate privileged user.
+  scripts (`sql_init/001`–`021`) as a separate privileged user.
 
 ## Filesystem
 
@@ -95,7 +95,7 @@ After cloning:
 
 1. Point MAMP's document root to `public_html/`.
 2. Create the database and a least-privilege MySQL user.
-3. Apply `sql_init/001` through `sql_init/007`.
+3. Apply `sql_init/001` through `sql_init/021`.
 4. Copy `config/config.example.php` to `config/config.local.php` and fill in
    credentials.
 5. Visit `http://localhost/`.

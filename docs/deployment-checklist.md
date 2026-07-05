@@ -16,7 +16,7 @@ database is not configured, you are redirected to `/setup`. See
 
 1. Create the site-master password (first visit only).
 2. Enter MySQL credentials; test the server, create the database, test it.
-3. Initialize the schema (runs `sql_init/001`–`010`).
+3. Initialize the schema (runs `sql_init/001`–`021`).
 4. Create the initial administrator account.
 5. Save configuration — `config/config.local.php` is written and you are sent
    to the site.
@@ -37,7 +37,7 @@ database during setup (switch to a least-privilege user afterward).
 
 - Create the database.
 - Create a least-privilege database user with `SELECT, INSERT, UPDATE, DELETE` on the CMS database (no DDL needed at runtime).
-- Apply the SQL scripts in order: `001_schema`, `002_seed`, `003_oauth`, `004_capabilities`, `005_media`, `006_content`, `007_comments`, `008_profile_avatars`, `009_apikey_own_capability`, `010_invite_codes`, `011_audit_events`, `012_password_reset`, `013_pages`, `014_menus`, `015_settings`, `016_content_revisions`, `017_extend_user_profiles`, `018_user_email_privacy`, `019_user_email_privacy_default_hidden`. (Or use the migration runner via `/admin/migrations`, which records each in `schema_migrations`.)
+- Apply the SQL scripts in order: `001_schema`, `002_seed`, `003_oauth`, `004_capabilities`, `005_media`, `006_content`, `007_comments`, `008_profile_avatars`, `009_apikey_own_capability`, `010_invite_codes`, `011_audit_events`, `012_password_reset`, `013_pages`, `014_menus`, `015_settings`, `016_content_revisions`, `017_extend_user_profiles`, `018_user_email_privacy`, `019_user_email_privacy_default_hidden`, `020_starter_subsystems`, `021_seed_author_moderator_roles`. (Or use the migration runner via `/admin/migrations`, which records each in `schema_migrations`.)
 - Change seeded admin password immediately.
 
 For local development only, run `sql_init/000_reset_dev.sql` before the schema script if a previous failed import left partial tables behind.

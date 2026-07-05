@@ -35,7 +35,7 @@ All public URLs are extensionless (`.php` is hidden via `.htaccess` rewrites).
 - `/profile`: Current user's profile.
 - `/user/{slug}`: Public profile page for an active user.
 - `/admin`: Admin dashboard (any user with an admin/editor capability).
-- `/admin/users`, `/admin/roles`, `/admin/api-keys`, `/admin/media`, `/admin/media-cleanup`, `/admin/articles`, `/admin/article-edit`, `/admin/article-preview`, `/admin/pages`, `/admin/page-edit`, `/admin/page-preview`, `/admin/revisions`, `/admin/comments`, `/admin/invites`, `/admin/menus`, `/admin/settings`, `/admin/migrations`, `/admin/search`, `/admin/audit-log`: Admin area, gated by capabilities.
+- `/admin/users`, `/admin/roles`, `/admin/api-keys`, `/admin/media`, `/admin/media-cleanup`, `/admin/articles`, `/admin/article-edit`, `/admin/article-preview`, `/admin/pages`, `/admin/page-edit`, `/admin/page-preview`, `/admin/listings`, `/admin/listing-edit`, `/admin/contact-submissions`, `/admin/contact-forms`, `/admin/revisions`, `/admin/comments`, `/admin/invites`, `/admin/menus`, `/admin/settings`, `/admin/migrations`, `/admin/system-status`, `/admin/exports`, `/admin/backups`, `/admin/demo-content`, `/admin/search`, `/admin/audit-log`: Admin area, gated by capabilities.
 - `/logout`: Logout.
 - `/api/me`, `/api/session`: API endpoints (extensionless under `/api`).
 - `/api/health`: Public, file-cached health/status check.

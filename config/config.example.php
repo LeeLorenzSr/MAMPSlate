@@ -52,6 +52,7 @@ return [
         'forgot'     => ['max' => 5,  'window' => 3600],
         'reset'      => ['max' => 10, 'window' => 3600],
         'api_session'=> ['max' => 10, 'window' => 60],
+        'contact'    => ['max' => 3,  'window' => 300],
     ],
     'oauth' => [
         'google' => [
@@ -97,5 +98,7 @@ return [
         'tags' => true,
         'seo_sitemap' => true,
         'rss_feed' => true,
+        'listings' => true,
+        'contact_forms' => true,
     ],
 ];

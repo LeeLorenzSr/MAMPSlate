@@ -17,6 +17,8 @@ reusable **base CMS** — copy it to a new project and specialize it.
 - [API Specification](api-specification.md) — JSON API conventions (bootstrap API).
 - [API v1](api-v1.md) — versioned CRUD API reference (+ [openapi-v1.yaml](openapi-v1.yaml)).
 - [Extending the CMS](extending-the-cms.md) — subsystem pattern and completion checklist for AI agents.
+- [Starter Customization Guide](starter-customization-guide.md) - build your first project-specific subsystem.
+- [Feature Module Checklists](feature-module-checklists.md) - migration, repository, route, API, and MCP templates.
 - [MCP AI Management](mcp-ai-management.md) — MCP endpoint for AI clients.
 - [Backup & Restore](backup-restore.md) — backup/restore runbook and CLI helpers.
 - [Coding Standards](coding-standards.md) — PHP conventions for this codebase.

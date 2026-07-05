@@ -61,12 +61,19 @@
 - **`article_tags`** — many-to-many join of articles to tags.
 - **`media`** — uploaded image metadata: stored name, original name, MIME, size,
   dimensions, alt text, title, and uploader.
+- **`listings`** - generic directory/listing content: title, slug, summary,
+  Markdown + cached HTML, image, JSON links, JSON tags, owner, status, SEO meta,
+  and publish timestamps.
 
 ### Feedback
 
 - **`comments`** — logged-in comments on articles, with `parent_id` for threaded
   replies and `status` (`pending`/`approved`/`rejected`/`spam`). Indexed on
   `(article_id, status, created_at)`.
+- **`contact_forms`** - public form definitions, recipient email, active flag,
+  and notification flag.
+- **`contact_submissions`** - public form submissions with moderation status,
+  hashed IP, user agent, and timestamps.
 
 ### Security operations
 
@@ -118,6 +125,11 @@ Applied in order under `sql_init/`:
 | `014_menus.sql` | `menus`, `menu_items` + `menu.manage` capability. |
 | `015_settings.sql` | `settings` + `settings.manage` capability. |
 | `016_content_revisions.sql` | `content_revisions`. |
+| `017_extend_user_profiles.sql` | Public profile fields and profile slugs. |
+| `018_user_email_privacy.sql` | User email privacy flag. |
+| `019_user_email_privacy_default_hidden.sql` | Makes email privacy hidden by default. |
+| `020_starter_subsystems.sql` | Listings, contact forms/submissions, operations capabilities, and feature flags. |
+| `021_seed_author_moderator_roles.sql` | Author and moderator default roles. |
 
 The `schema_migrations` ledger table is created by the migration runner itself
 (see [setup.md](setup.md) and `includes/MigrationRunner.php`), not by a numbered
