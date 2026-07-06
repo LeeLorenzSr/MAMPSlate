@@ -48,13 +48,21 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 
         $recipient = trim((string)$form['recipient_email']);
         if ($recipient !== '' && (bool)$form['notify_on_submit']) {
-            $mailer->send(
-                $recipient,
-                'New contact submission: ' . ($subject !== '' ? $subject : $appName),
-                '<p><strong>From:</strong> ' . e($name) . ' &lt;' . e($email) . '&gt;</p>'
-                . '<p><strong>Subject:</strong> ' . e($subject) . '</p>'
-                . '<p>' . nl2br(e($body)) . '</p>'
-            );
+            if (filter_var($recipient, FILTER_VALIDATE_EMAIL) === false) {
+                error_log('contact notification skipped: invalid recipient on form ' . (int)$form['id']);
+            } else {
+                try {
+                    $mailer->send(
+                        $recipient,
+                        'New contact submission: ' . ($subject !== '' ? $subject : $appName),
+                        '<p><strong>From:</strong> ' . e($name) . ' &lt;' . e($email) . '&gt;</p>'
+                        . '<p><strong>Subject:</strong> ' . e($subject) . '</p>'
+                        . '<p>' . nl2br(e($body)) . '</p>'
+                    );
+                } catch (Throwable $e) {
+                    error_log('contact notification failed for submission ' . $submissionId . ': ' . $e->getMessage());
+                }
+            }
         }
         $message = 'Thanks. Your message has been received.';
         $_POST = [];

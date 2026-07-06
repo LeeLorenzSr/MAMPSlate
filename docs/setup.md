@@ -49,6 +49,19 @@ administrator account created during setup.
    settings + detected base URL), verifies the new configuration connects and
    the schema is installed, then redirects to the site.
 
+After the redirect, use the administrator account to review:
+
+- **System status** (`/admin/system-status`) for PHP extensions, writable
+  directories, mail mode, upload limits, HTTPS/cookie settings, and migrations.
+- **Backups** (`/admin/backups`) to confirm database/file backup tooling works
+  on the host.
+- **Exports** (`/admin/exports`) to confirm JSON/CSV exports are reachable only
+  for trusted operators.
+- **Listings** (`/admin/listings`) and **contact forms**
+  (`/admin/contact-forms`) if the project will use those starter subsystems.
+- **Demo content** (`/admin/demo-content`) only when a sandbox or staging copy
+  needs example page/article/listing content.
+
 ## What the wizard writes
 
 - `config/config.local.php` — full configuration (based on

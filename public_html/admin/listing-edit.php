@@ -59,7 +59,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             'status' => $status,
             'image_media_id' => (int)($_POST['image_media_id'] ?? 0) ?: null,
             'owner_user_id' => (int)($_POST['owner_user_id'] ?? 0) ?: null,
-            'links' => parse_links((string)($_POST['links'] ?? '')),
+            'links' => ListingLinkNormalizer::fromText((string)($_POST['links'] ?? '')),
             'tags' => parse_tags((string)($_POST['tags'] ?? '')),
             'meta_title' => trim((string)($_POST['meta_title'] ?? '')),
             'meta_description' => trim((string)($_POST['meta_description'] ?? '')),
@@ -77,7 +77,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     } catch (Throwable $e) {
         $error = $e->getMessage();
         $item = array_merge($item, $_POST);
-        $item['links'] = parse_links((string)($_POST['links'] ?? ''));
+        try {
+            $item['links'] = ListingLinkNormalizer::fromText((string)($_POST['links'] ?? ''));
+        } catch (Throwable) {
+            $item['links'] = [];
+        }
         $item['tags'] = parse_tags((string)($_POST['tags'] ?? ''));
     }
 }
@@ -171,24 +175,6 @@ function parse_tags(string $input): array
         }
     }
     return array_values($tags);
-}
-
-function parse_links(string $input): array
-{
-    $links = [];
-    foreach (preg_split('/\r\n|\r|\n/', $input) ?: [] as $line) {
-        $line = trim($line);
-        if ($line === '') {
-            continue;
-        }
-        $parts = array_map('trim', explode('|', $line, 2));
-        $label = $parts[0] ?? 'Link';
-        $url = $parts[1] ?? $parts[0] ?? '';
-        if (preg_match('#^https?://#i', $url)) {
-            $links[] = ['label' => $label, 'url' => $url];
-        }
-    }
-    return $links;
 }
 
 function links_to_text(array $links): string

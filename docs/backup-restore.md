@@ -43,6 +43,11 @@ php tools/backup_db.php
 Requires `mysqldump` on the PATH (MAMP: `C:\MAMP\bin\mysql\bin` on Windows,
 `/Applications/MAMP/Library/bin` on macOS).
 
+The admin UI at `/admin/backups` calls this helper through the current PHP
+binary. A failed run shows the administrator a short, redacted exit-code/detail
+summary and writes full command output to the PHP error log for server-side
+diagnosis.
+
 ## Files backup
 
 Tar the uploads and config:
@@ -57,6 +62,24 @@ Or use `tools/backup_files.php`:
 ```bash
 php tools/backup_files.php
 ```
+
+This helper uses PHP's `PharData` extension to write `tar.gz` archives, so the
+PHP build must have Phar enabled and the `phar.readonly` setting must allow
+archive creation. The web/PHP user needs write permission to `backups/` and read
+permission for `public_html/uploads`, `config/config.local.php`, and
+`config/sitemaster.hash`.
+
+## Admin backup UI requirements
+
+- Capability: `backup.manage`.
+- Writable directory: `backups/` under the project root.
+- Database backups: `mysqldump` and `gzip` must be available on the PATH for the
+  PHP/web user. On Windows MAMP, add `C:\MAMP\bin\mysql\bin` and a gzip-capable
+  toolchain to PATH, or run the CLI helper from a shell where they are present.
+- File backups: PHP Phar support must be enabled.
+- Downloads are restricted to generated filenames matching
+  `db_YYYYmmdd_HHMMSS.sql.gz` or `files_YYYYmmdd_HHMMSS.tar.gz`; path traversal
+  and host-specific slash tricks are rejected by the verifier.
 
 ## Restore order
 

@@ -14,6 +14,7 @@ require_once APP_ROOT . '/includes/MediaRepository.php';
 require_once APP_ROOT . '/includes/MediaUsage.php';
 require_once APP_ROOT . '/includes/ImageProcessor.php';
 require_once APP_ROOT . '/includes/Slug.php';
+require_once APP_ROOT . '/includes/ListingLinkNormalizer.php';
 require_once APP_ROOT . '/includes/MarkdownRenderer.php';
 require_once APP_ROOT . '/includes/ArticleRepository.php';
 require_once APP_ROOT . '/includes/PageRepository.php';

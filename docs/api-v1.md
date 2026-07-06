@@ -77,6 +77,7 @@ List endpoints accept `?page=` (1-based) and `?per_page=` (1–100, default 20).
 | GET      | `/api/v1/articles/{id}` | (any) for published; `article.create` otherwise | |
 | POST     | `/api/v1/articles`    | `article.create`                    | Creates a draft. |
 | PATCH    | `/api/v1/articles/{id}` | `article.edit.any` or `article.edit.own` | `article.publish` required to set status=published. |
+| PUT      | `/api/v1/articles/{id}` | `article.edit.any` or `article.edit.own` | Same validation as PATCH. |
 | DELETE   | `/api/v1/articles/{id}` | `article.delete.any` or `article.delete.own` | Hard-deletes (matches admin behavior). |
 
 Article object: `id, title, slug, summary, status, body_markdown, body_html,
@@ -106,6 +107,7 @@ curl -X POST http://localhost/api/v1/articles \
 | GET      | `/api/v1/pages/{id}`| (any) published; `page.create` otherwise | |
 | POST     | `/api/v1/pages`     | `page.create` | |
 | PATCH    | `/api/v1/pages/{id}`| `page.edit.any` or `page.edit.own` | `page.publish` to publish. |
+| PUT      | `/api/v1/pages/{id}`| `page.edit.any` or `page.edit.own` | Same validation as PATCH. |
 | DELETE   | `/api/v1/pages/{id}`| `page.delete.any` or `page.delete.own` | |
 
 Page object: `id, title, slug, summary, status, body_markdown, body_html,
@@ -141,6 +143,7 @@ curl -X POST http://localhost/api/v1/media \
 | GET    | `/api/v1/listings/{id}` | (any) for published; `listing.manage` otherwise | |
 | POST   | `/api/v1/listings`      | `listing.manage` | Creates a listing. |
 | PATCH  | `/api/v1/listings/{id}` | `listing.manage` | |
+| PUT    | `/api/v1/listings/{id}` | `listing.manage` | Same validation as PATCH. |
 | DELETE | `/api/v1/listings/{id}` | `listing.manage` | |
 
 Listing object: `id, title, slug, summary, status, body_markdown, body_html,
@@ -149,7 +152,35 @@ meta_description, published_at, updated_at`.
 
 Write fields: `title`, `body_markdown`, `slug`, `summary`, `status`,
 `image_media_id`, `owner_user_id`, `links` (array of `{label,url}`), `tags`
-(array of strings), `meta_title`, `meta_description`.
+(array of strings), `meta_title`, `meta_description`. Listing link URLs are
+normalized to `https://` when an operator supplies a bare host like
+`example.com`; non-http(s) schemes are rejected with `422 validation`.
+
+List and create examples:
+
+```bash
+curl http://localhost/api/v1/listings?tag=featured \
+  -H "Authorization: Bearer mpk_xxx"
+```
+
+```bash
+curl -X POST http://localhost/api/v1/listings \
+  -H "Authorization: Bearer mpk_xxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Example directory item",
+    "body_markdown": "Reusable profile or catalog content.",
+    "status": "draft",
+    "links": [{"label": "Website", "url": "example.com"}],
+    "tags": ["featured"]
+  }'
+```
+
+### Contact forms
+
+Public contact forms are intentionally not exposed through API v1 yet. The
+public route stores submissions at `/contact`; administrators review forms and
+submissions in `/admin/contact-forms` and `/admin/contact-submissions`.
 
 ### Comments
 

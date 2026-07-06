@@ -251,12 +251,21 @@ function build_listing_data(array $body, int $actorId, ?array $existing): array
         'status' => $status,
         'image_media_id' => isset($body['image_media_id']) ? (int)$body['image_media_id'] : ($existing['image_media_id'] ?? null),
         'owner_user_id' => isset($body['owner_user_id']) ? (int)$body['owner_user_id'] : ($existing['owner_user_id'] ?? $actorId),
-        'links' => is_array($body['links'] ?? null) ? $body['links'] : ($existing['links'] ?? []),
+        'links' => normalize_listing_api_links(is_array($body['links'] ?? null) ? $body['links'] : ($existing['links'] ?? [])),
         'tags' => is_array($body['tags'] ?? null) ? array_map('strval', $body['tags']) : ($existing['tags'] ?? []),
         'meta_title' => isset($body['meta_title']) ? (string)$body['meta_title'] : ($existing['meta_title'] ?? ''),
         'meta_description' => isset($body['meta_description']) ? (string)$body['meta_description'] : ($existing['meta_description'] ?? ''),
         'published_at' => $publishedAt,
     ];
+}
+
+function normalize_listing_api_links(array $links): array
+{
+    try {
+        return ListingLinkNormalizer::fromArray($links);
+    } catch (InvalidArgumentException $e) {
+        api_error(422, 'validation', $e->getMessage());
+    }
 }
 
 // ---- articles --------------------------------------------------------------

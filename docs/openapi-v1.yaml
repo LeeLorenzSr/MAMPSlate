@@ -99,6 +99,15 @@ paths:
       responses:
         "200": { description: Updated }
         "403": { description: Forbidden }
+    put:
+      summary: Replace/update an article (same rules as PATCH)
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200": { description: Updated }
+        "403": { description: Forbidden }
     delete:
       summary: Delete an article (requires article.delete.any/own)
       responses:
@@ -116,6 +125,7 @@ paths:
       - { in: path, name: id, required: true, schema: { type: integer } }
     get: { summary: Get one page, responses: { "200": { description: Page } } }
     patch: { summary: Update a page, responses: { "200": { description: Updated } } }
+    put: { summary: Replace/update a page, responses: { "200": { description: Updated } } }
     delete: { summary: Delete a page, responses: { "200": { description: Deleted } } }
   /media:
     get:
@@ -170,6 +180,7 @@ paths:
       - { in: path, name: id, required: true, schema: { type: integer } }
     get: { summary: Get one listing, responses: { "200": { description: Listing } } }
     patch: { summary: Update a listing, responses: { "200": { description: Updated } } }
+    put: { summary: Replace/update a listing, responses: { "200": { description: Updated } } }
     delete: { summary: Delete a listing, responses: { "200": { description: Deleted } } }
   /comments:
     get:

@@ -69,6 +69,43 @@ or tags, and render at `/pages/{slug}`. Capabilities: `page.create`,
 `page.edit.own`/`.any`, `page.publish`, `page.delete.own`/`.any`. Gated by the
 `pages` feature toggle.
 
+## Listings
+
+Listings are a generic directory/catalog content type for projects that need
+profiles, venues, organizations, products, partners, resources, or other
+repeatable public records without baking vertical-specific fields into the CMS
+core. They are managed at **/admin/listings** and **/admin/listing-edit**
+(capability `listing.manage`) and render publicly at `/listings` and
+`/listings/{slug}`.
+
+Each listing has title, slug, summary, Markdown body, cached HTML, status,
+optional image, optional owner user, normalized external links, free-form tags,
+and SEO fields. Listing links are entered as `Label | URL` lines in admin or
+`{label,url}` objects via API v1. Bare hosts such as `example.com` normalize to
+`https://example.com`; non-http(s) schemes are rejected.
+
+Use listings as the first customization point when a copied project needs a
+simple public catalog. If the project needs strict typed fields or relationships
+between records, add a project-specific subsystem rather than overloading the
+generic listing body.
+
+## Contact Forms
+
+The default public contact route is `/contact`. Forms are configured at
+**/admin/contact-forms** and submissions are reviewed at
+**/admin/contact-submissions** (capability `contact.manage`). The default
+`contact` form is seeded by migration `020_starter_subsystems.sql`.
+
+Contact submissions store the selected form, name, email, subject, message,
+moderation status, a hashed IP, and a truncated user agent. Public submission is
+rate-limited and includes a honeypot field; spam/rate-limit rejections return
+the same public thank-you response and log only a hashed signal. Forms can be
+activated/deactivated from admin. Inactive forms return 404 publicly.
+
+Notification email is optional per form. Recipient addresses are validated
+server-side before save, and runtime mailer failures are logged without blocking
+the public submission response.
+
 ## Navigation menus
 
 Header and footer menus are managed at **/admin/menus** (capability
@@ -88,8 +125,8 @@ with config fallback, so the system works before any setting is saved. Secrets
 
 ## Search
 
-- **/search** (public) searches published articles and pages by title, summary,
-  and body, with pagination and excerpts.
+- **/search** (public) searches published articles, pages, and listings by
+  title, summary, and body, with pagination and excerpts.
 - **/admin/search** searches articles, pages, media, comments, and users, but
   only returns each record type if the viewer has the relevant capability.
 
@@ -98,7 +135,7 @@ with config fallback, so the system works before any setting is saved. Secrets
 - Per-article meta title/description, canonical URLs, Open Graph/Twitter tags,
   and JSON-LD `Article` schema are rendered in `<head>` by `renderHeader()`.
 - `/sitemap.xml` lists the home page, article index, categories, and all
-  published articles.
+  published articles, pages, and listings.
 - `/robots.txt` allows crawling of public content and disallows `/admin`,
   `/auth`, `/api`.
 - `/feed` is an RSS 2.0 feed of the 20 most recent published articles.
@@ -106,7 +143,8 @@ with config fallback, so the system works before any setting is saved. Secrets
 ## Feature toggles
 
 The `features` config block can disable unused subsystems when this base is
-copied to a new project: `articles`, `comments`, `media`, `categories`, `tags`,
-`seo_sitemap`, `rss_feed`. Disabled features hide their admin nav and return 404
-on their routes. Use the `feature()` / `requireFeature()` helpers
+copied to a new project: `articles`, `pages`, `comments`, `media`,
+`categories`, `tags`, `seo_sitemap`, `rss_feed`, `listings`, and
+`contact_forms`. Disabled features hide their admin nav and return 404 on their
+routes. Use the `feature()` / `requireFeature()` helpers
 (`includes/http.php`) to gate new subsystems the same way.

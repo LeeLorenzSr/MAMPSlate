@@ -13,7 +13,7 @@ if (!is_dir($backupsDir)) {
 if (isset($_GET['download'])) {
     $file = basename((string)$_GET['download']);
     $path = $backupsDir . '/' . $file;
-    if (!preg_match('/^(db|files)_\d{8}_\d{6}\.(sql\.gz|tar\.gz)$/', $file) || !is_file($path)) {
+    if (!backup_file_is_downloadable($file) || !is_file($path)) {
         http_response_code(404);
         exit('Backup not found.');
     }
@@ -27,6 +27,7 @@ if (isset($_GET['download'])) {
 
 $message = null;
 $error = null;
+$errorDetail = null;
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     requireValidCsrf();
@@ -41,6 +42,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $audit->log('backup.run', (int)$currentUser['id'], 'backup', $type, ['ok' => $ok ? '1' : '0']);
         $message = $ok ? 'Backup completed.' : null;
         $error = $ok ? null : 'Backup failed. Check server tools and permissions.';
+        $errorDetail = $ok ? null : backup_failure_detail($output, $rc);
         if (!$ok) {
             error_log('backup failed: ' . implode("\n", $output));
         }
@@ -54,6 +56,12 @@ renderHeader('Backups', $currentUser);
 ?>
 <?php if ($message): ?><p class="notice success"><?= e($message) ?></p><?php endif; ?>
 <?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
+<?php if ($errorDetail): ?>
+    <section class="panel">
+        <h2>Failure details</h2>
+        <pre><?= e($errorDetail) ?></pre>
+    </section>
+<?php endif; ?>
 <section class="panel">
     <h2>Create backup</h2>
     <form method="post" class="action-bar">
@@ -70,7 +78,7 @@ renderHeader('Backups', $currentUser);
             <tbody>
                 <?php foreach ($files as $path): ?>
                     <?php $file = basename($path); ?>
-                    <?php if (!preg_match('/^(db|files)_\d{8}_\d{6}\.(sql\.gz|tar\.gz)$/', $file)) { continue; } ?>
+                    <?php if (!backup_file_is_downloadable($file)) { continue; } ?>
                     <tr>
                         <td><code><?= e($file) ?></code></td>
                         <td><?= e(number_format((int)filesize($path))) ?> bytes</td>
@@ -83,3 +91,19 @@ renderHeader('Backups', $currentUser);
     </div>
 </section>
 <?php renderFooter();
+
+function backup_file_is_downloadable(string $file): bool
+{
+    return preg_match('/^(db|files)_\d{8}_\d{6}\.(sql\.gz|tar\.gz)$/', $file) === 1;
+}
+
+function backup_failure_detail(array $output, int $exitCode): string
+{
+    $lines = array_slice(array_map('trim', $output), -6);
+    $text = implode("\n", array_filter($lines, fn($line) => $line !== ''));
+    $text = preg_replace('/(--password=)(\S+)/i', '$1[redacted]', $text) ?? $text;
+    $text = preg_replace('/(password\s*[:=]\s*)(\S+)/i', '$1[redacted]', $text) ?? $text;
+    $text = substr($text, 0, 1200);
+
+    return trim("Exit code: {$exitCode}\n" . ($text !== '' ? "Last output:\n{$text}" : 'No command output was captured.'));
+}

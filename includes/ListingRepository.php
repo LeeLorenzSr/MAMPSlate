@@ -258,19 +258,7 @@ final class ListingRepository
 
     private function normalizeLinks(array $links): array
     {
-        $out = [];
-        foreach ($links as $link) {
-            if (!is_array($link)) {
-                continue;
-            }
-            $label = trim((string)($link['label'] ?? 'Link'));
-            $url = trim((string)($link['url'] ?? ''));
-            if ($url === '') {
-                continue;
-            }
-            $out[] = ['label' => $label !== '' ? $label : 'Link', 'url' => $url];
-        }
-        return $out;
+        return ListingLinkNormalizer::fromArray($links);
     }
 
     private function normalizeTags(array $tags): array

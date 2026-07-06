@@ -20,13 +20,20 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         if ($name === '') {
             throw new RuntimeException('Name is required.');
         }
+        if ($formId !== null && !$contacts->findFormById($formId)) {
+            throw new RuntimeException('Contact form not found.');
+        }
+        $recipientEmail = trim((string)($_POST['recipient_email'] ?? ''));
+        if ($recipientEmail !== '' && filter_var($recipientEmail, FILTER_VALIDATE_EMAIL) === false) {
+            throw new RuntimeException('Recipient email must be a valid email address.');
+        }
         $slug = Slug::slugify(trim((string)($_POST['slug'] ?? '')) ?: $name);
         $slug = Slug::ensureUnique(fn($s, $exclude) => $contacts->slugExists($s, $exclude), $slug, $formId);
         $savedId = $contacts->saveForm([
             'name' => $name,
             'slug' => $slug,
             'description' => trim((string)($_POST['description'] ?? '')),
-            'recipient_email' => trim((string)($_POST['recipient_email'] ?? '')),
+            'recipient_email' => $recipientEmail,
             'is_active' => isset($_POST['is_active']),
             'notify_on_submit' => isset($_POST['notify_on_submit']),
         ], $formId);

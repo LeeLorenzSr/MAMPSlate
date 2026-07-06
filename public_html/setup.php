@@ -545,6 +545,17 @@ $baseUrl = detect_base_url();
                 <button type="submit" name="action" value="save_finish">Save and finish</button>
             </form>
         </section>
+
+        <section class="panel setup-step">
+            <h2>Post-setup checklist</h2>
+            <ul class="checklist">
+                <li>Review <strong>System status</strong> for PHP extensions, writable directories, mail mode, upload limits, HTTPS/cookies, and migrations.</li>
+                <li>Run a test <strong>Database backup</strong> and <strong>File backup</strong> on the target host.</li>
+                <li>Confirm <strong>Exports</strong> are available only to trusted operators.</li>
+                <li>Configure or disable <strong>Listings</strong> and <strong>Contact forms</strong> for the project.</li>
+                <li>Seed <strong>Demo content</strong> only on sandbox or staging installs that need examples.</li>
+            </ul>
+        </section>
     <?php endif; ?>
 </main>
 </body>
