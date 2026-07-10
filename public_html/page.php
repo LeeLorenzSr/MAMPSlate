@@ -11,9 +11,7 @@ $currentUser = $auth->user();
 $slug = (string)($_GET['slug'] ?? '');
 $page = $slug !== '' ? $pages->findBySlug($slug) : null;
 
-if (!$page || $page['status'] !== 'published'
-    || $page['published_at'] === null
-    || strtotime($page['published_at']) > time()) {
+if (!$page || !contentIsPublic($page)) {
     http_response_code(404);
     renderHeader('Not found', $currentUser);
     echo '<p>The page you were looking for is not available.</p>';
@@ -59,6 +57,7 @@ renderHeader(
     <img class="article-cover" src="<?= e($coverSrc) ?>" alt="<?= e($coverAlt) ?>">
     <div class="article-body">
         <?= $page['body_html'] ?>
+        <?php renderPublicContentExtensions('page', (int)$page['id']); ?>
     </div>
 </article>
 <?php renderFooter();

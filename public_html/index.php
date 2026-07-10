@@ -12,6 +12,7 @@ if (($_GET['signup'] ?? '') === 'pending') {
 }
 $resetNotice = $_SESSION['reset_notice'] ?? null;
 unset($_SESSION['reset_notice']);
+$homepageLayout = (string)setting('theme.homepage_layout', 'mixed');
 
 renderHeader('Home', $currentUser, [
     'canonical' => '/',
@@ -66,7 +67,7 @@ renderHeader('Home', $currentUser, [
     </section>
 <?php endif; ?>
 
-<?php if (feature('articles')): ?>
+<?php if (feature('articles') && $homepageLayout !== 'listings'): ?>
     <?php $recentArticles = $articles->listPublished(1, 5, null, null); ?>
     <?php if ($recentArticles): ?>
     <section class="panel">
@@ -94,6 +95,25 @@ renderHeader('Home', $currentUser, [
             <?php endforeach; ?>
         </div>
         <p class="space-top"><a href="/articles"><i class="bi bi-arrow-right"></i> Browse all articles</a></p>
+    </section>
+    <?php endif; ?>
+<?php endif; ?>
+
+<?php if (feature('listings') && $homepageLayout !== 'articles'): ?>
+    <?php $recentListings = $listings->listPublished(1, 5); ?>
+    <?php if ($recentListings): ?>
+    <section class="panel">
+        <h2><i class="bi bi-card-list"></i> Recent listings</h2>
+        <div class="article-list">
+            <?php foreach ($recentListings as $item): ?>
+                <article class="article-card">
+                    <?php $cardImage = !empty($item['image']) ? '/uploads/' . $item['image'] : '/assets/img/default-cover.jpg'; ?>
+                    <a class="article-card-cover" href="/listings/<?= e($item['slug']) ?>"><img src="<?= e($cardImage) ?>" alt="<?= e($item['title']) ?>" loading="lazy"></a>
+                    <div class="article-card-body"><h3><a href="/listings/<?= e($item['slug']) ?>"><?= e($item['title']) ?></a></h3><?php if ($item['summary']): ?><p><?= e($item['summary']) ?></p><?php endif; ?></div>
+                </article>
+            <?php endforeach; ?>
+        </div>
+        <p class="space-top"><a href="/listings"><i class="bi bi-arrow-right"></i> Browse all listings</a></p>
     </section>
     <?php endif; ?>
 <?php endif; ?>

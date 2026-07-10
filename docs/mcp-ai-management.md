@@ -117,6 +117,13 @@ management, migrations, backup/restore, and audit-log viewing are **not**
 implemented in v1. Raw SQL, shell, filesystem access, config inspection, and
 secret dumping are never implemented.
 
+When `custom_fields` is enabled, `cms.get_content_extensions` reads the generic
+field/term/link/embed/relationship groups for an article, page, or listing.
+`cms.update_content_extensions` replaces only the groups supplied by the caller,
+honors MCP dry-run, uses existing content edit capabilities, and audit-logs the
+safe group names. It never creates field definitions, changes settings, or
+activates webhooks.
+
 Input rules: every tool validates against a strict allowlist
 (`additionalProperties: false`); unknown fields are rejected; `body_html` is
 never accepted (Markdown only, rendered through the existing renderer);

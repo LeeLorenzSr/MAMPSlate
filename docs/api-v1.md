@@ -176,6 +176,53 @@ curl -X POST http://localhost/api/v1/listings \
   }'
 ```
 
+### Generic extensions and workflow
+
+Article, page, and listing objects include an `extensions` object with
+`custom_fields`, `terms`, `links`, `embeds`, and `relationships`. On POST,
+PATCH, or PUT, include only extension groups that should be replaced:
+
+```json
+{
+  "status": "scheduled",
+  "published_at": "2026-08-14T09:00",
+  "extensions": {
+    "custom_fields": {"release_date": "2026-08-14"},
+    "term_ids": [3],
+    "links": [{"label": "Official site", "url": "example.com", "service_type": "website"}],
+    "embeds": [{"source_url": "https://open.spotify.com/...", "provider": "spotify"}],
+    "relationships": [{"target_type": "listing", "target_id": 12, "relationship_type": "features"}]
+  }
+}
+```
+
+Allowed content statuses are `draft`, `submitted`, `needs_changes`,
+`scheduled`, `published`, `archived`, and `rejected`. A `published` request
+with a future `published_at` becomes `scheduled`. Article/page publication or
+scheduling requires the same publish capability; public reads include scheduled
+items only when their timestamp has passed.
+
+### Taxonomies
+
+| Method | Path | Capability | Notes |
+|---|---|---|---|
+| GET | `/api/v1/taxonomies` | any authenticated | Lists taxonomies and terms. |
+| POST | `/api/v1/taxonomies` | `taxonomy.manage` | Creates a taxonomy; optional `terms` array. |
+| PATCH/PUT | `/api/v1/taxonomies/{id}` | `taxonomy.manage` | Updates the taxonomy. |
+| DELETE | `/api/v1/taxonomies/{id}` | `taxonomy.manage` | Deletes taxonomy and terms. |
+
+### Collections
+
+| Method | Path | Capability | Notes |
+|---|---|---|---|
+| GET | `/api/v1/collections` | any authenticated | Lists public collections; managers also see private ones. |
+| GET | `/api/v1/collections/{id}` | any/public or `collection.manage` | Includes ordered entity items. |
+| POST | `/api/v1/collections` | `collection.manage` | Body supports `name`, `slug`, `description`, `is_public`, `items`. |
+| PATCH/PUT | `/api/v1/collections/{id}` | `collection.manage` | Updates metadata and optionally replaces `items`. |
+| DELETE | `/api/v1/collections/{id}` | `collection.manage` | Deletes collection and items. |
+
+Each collection item is `{ "entity_type": "article|page|listing", "entity_id": 12 }`.
+
 ### Contact forms
 
 Public contact forms are intentionally not exposed through API v1 yet. The

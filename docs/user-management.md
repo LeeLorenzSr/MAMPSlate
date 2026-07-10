@@ -57,6 +57,13 @@ Signed-in users can manage their own account on `/profile`:
 
 ## Public profile
 
+Profiles can identify as a creator or organization and choose public, unlisted,
+or private visibility. Additional social links are stored as validated JSON and
+rendered only for http(s) URLs. An organization can opt in to claim requests;
+signed-in users submit a short request on the profile, and administrators review
+it at `/admin/profile-claims`. Approval records the claimant and closes future
+requests; identity verification remains a human operator responsibility.
+
 Every active user has a public profile at `/user/{slug}` showing their avatar,
 cover photo, display name, bio, social links, "Member since [date]", and a
 paginated grid of the user's published articles. Compact system badges are

@@ -105,13 +105,12 @@ final class PageRepository
         $stmt = $this->pdo->prepare(
             'SELECT pages.id, pages.title, pages.slug, pages.summary, pages.published_at, pages.updated_at
              FROM pages
-             WHERE pages.status = :status
+             WHERE pages.status IN (\'published\', \'scheduled\')
                AND pages.published_at IS NOT NULL
                AND pages.published_at <= CURRENT_TIMESTAMP
              ORDER BY pages.published_at DESC
              LIMIT :limit OFFSET :offset'
         );
-        $stmt->bindValue('status', 'published');
         $stmt->bindValue('limit', $perPage, PDO::PARAM_INT);
         $stmt->bindValue('offset', max(0, ($page - 1) * $perPage), PDO::PARAM_INT);
         $stmt->execute();
@@ -135,7 +134,7 @@ final class PageRepository
     {
         return (int)$this->pdo->query(
             "SELECT COUNT(*) FROM pages
-             WHERE status = 'published'
+             WHERE status IN ('published', 'scheduled')
                AND published_at IS NOT NULL
                AND published_at <= CURRENT_TIMESTAMP"
         )->fetchColumn();
@@ -147,14 +146,13 @@ final class PageRepository
         $stmt = $this->pdo->prepare(
             'SELECT pages.id, pages.title, pages.slug, pages.summary, pages.published_at
              FROM pages
-             WHERE pages.status = :status
+             WHERE pages.status IN (\'published\', \'scheduled\')
                AND pages.published_at IS NOT NULL
                AND pages.published_at <= CURRENT_TIMESTAMP
                AND (pages.title LIKE :q1 OR pages.summary LIKE :q2 OR pages.body_markdown LIKE :q3)
              ORDER BY pages.published_at DESC
              LIMIT :limit OFFSET :offset'
         );
-        $stmt->bindValue('status', 'published');
         $stmt->bindValue('q1', $like);
         $stmt->bindValue('q2', $like);
         $stmt->bindValue('q3', $like);

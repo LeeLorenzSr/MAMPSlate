@@ -1,32 +1,32 @@
 # MAMPSlate CMS Documentation
 
-This folder contains the specifications and operating notes for a generic
-PHP/MySQL CMS hosted on Apache, MySQL, and PHP (MAMP/LAMP). It is intended as a
-reusable **base CMS** — copy it to a new project and specialize it.
+These documents describe the reusable PHP/MySQL base CMS and its current
+implementation.
 
-## Documents
+- [System Requirements](requirements.md)
+- [First-Run Setup](setup.md)
+- [Architecture](architecture.md)
+- [Permissions](permissions.md)
+- [Content Management](content-management.md)
+- [Generic Extensibility](extensibility.md)
+- [Operations & Integrations](operations-and-integrations.md)
+- [User Management](user-management.md)
+- [OAuth Setup](oauth-setup.md)
+- [Database Specification](database-specification.md)
+- [API Specification](api-specification.md)
+- [API v1](api-v1.md) and [OpenAPI](openapi-v1.yaml)
+- [Extending the CMS](extending-the-cms.md)
+- [Starter Customization Guide](starter-customization-guide.md)
+- [Feature Module Checklists](feature-module-checklists.md)
+- [Agent Task Recipes](agent-task-recipes.md)
+- [Modules & Scaffolding](modules-and-scaffolding.md)
+- [MCP AI Management](mcp-ai-management.md)
+- [Backup & Restore](backup-restore.md)
+- [Coding Standards](coding-standards.md)
+- [Security Standards](security-standards.md)
+- [Style Preferences](style-preferences.md)
+- [Branding & Site Images](branding-assets.md)
+- [Deployment Checklist](deployment-checklist.md)
 
-- [System Requirements](requirements.md) — PHP modules, server, and database prerequisites.
-- [First-Run Setup](setup.md) — the browser-based setup wizard and site-master password.
-- [Architecture](architecture.md) — request flow, routes, and subsystems.
-- [Permissions](permissions.md) — the role → capability model and capability catalog.
-- [Content Management](content-management.md) — articles, categories, tags, media, comments, and SEO.
-- [User Management](user-management.md) — users, roles, signup, and federated login.
-- [OAuth Setup](oauth-setup.md) — configuring Google and GitHub login.
-- [Database Specification](database-specification.md) — tables and schema.
-- [API Specification](api-specification.md) — JSON API conventions (bootstrap API).
-- [API v1](api-v1.md) — versioned CRUD API reference (+ [openapi-v1.yaml](openapi-v1.yaml)).
-- [Extending the CMS](extending-the-cms.md) — subsystem pattern and completion checklist for AI agents.
-- [Starter Customization Guide](starter-customization-guide.md) - build your first project-specific subsystem.
-- [Feature Module Checklists](feature-module-checklists.md) - migration, repository, route, API, and MCP templates.
-- [MCP AI Management](mcp-ai-management.md) — MCP endpoint for AI clients.
-- [Backup & Restore](backup-restore.md) — backup/restore runbook and CLI helpers.
-- [Coding Standards](coding-standards.md) — PHP conventions for this codebase.
-- [Security Standards](security-standards.md) — security principles and controls.
-- [Style Preferences](style-preferences.md) — UI and content style guidance.
-- [Branding & Site Images](branding-assets.md) — the `assets/img/` folder and the basic set of logos, favicons, and share images.
-- [Deployment Checklist](deployment-checklist.md) — launch procedure.
-
-These documents describe the current implementation and should be revised as
-product requirements, branding, editorial workflow, and business rules become
-concrete.
+Keep API/OpenAPI, migration, permissions, and operational documentation in sync
+with every shipped subsystem. `php tools/verify.php` checks the core surface.

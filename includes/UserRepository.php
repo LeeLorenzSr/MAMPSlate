@@ -267,7 +267,11 @@ final class UserRepository
         string $socialGithub,
         string $socialLinkedin,
         string $socialWebsite,
-        bool $hideEmail
+        bool $hideEmail,
+        string $profileType = 'creator',
+        string $profileVisibility = 'public',
+        bool $isClaimable = false,
+        string $socialJson = '[]'
     ): void {
         $stmt = $this->pdo->prepare(
             'UPDATE users
@@ -276,7 +280,11 @@ final class UserRepository
                  social_github = :social_github,
                  social_linkedin = :social_linkedin,
                  social_website = :social_website,
-                 hide_email = :hide_email
+                 hide_email = :hide_email,
+                 profile_type = :profile_type,
+                 profile_visibility = :profile_visibility,
+                 is_claimable = :is_claimable,
+                 profile_social_json = :profile_social_json
              WHERE id = :id'
         );
         $stmt->execute([
@@ -287,7 +295,61 @@ final class UserRepository
             'social_linkedin' => $socialLinkedin,
             'social_website' => $socialWebsite,
             'hide_email' => $hideEmail ? 1 : 0,
+            'profile_type' => in_array($profileType, ['creator', 'organization'], true) ? $profileType : 'creator',
+            'profile_visibility' => in_array($profileVisibility, ['public', 'unlisted', 'private'], true) ? $profileVisibility : 'public',
+            'is_claimable' => $isClaimable ? 1 : 0,
+            'profile_social_json' => $socialJson,
         ]);
+    }
+
+    public function createProfileClaim(int $profileUserId, int $claimantUserId, string $message): void
+    {
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO profile_claim_requests (profile_user_id, claimant_user_id, message)
+             VALUES (:profile_user_id, :claimant_user_id, :message)
+             ON DUPLICATE KEY UPDATE message = :message_update, status = \'pending\', reviewed_by_user_id = NULL, reviewed_at = NULL'
+        );
+        $message = mb_substr(trim($message), 0, 500);
+        $stmt->execute(['profile_user_id' => $profileUserId, 'claimant_user_id' => $claimantUserId, 'message' => $message, 'message_update' => $message]);
+    }
+
+    public function profileClaims(): array
+    {
+        return $this->pdo->query(
+            'SELECT claims.*, profile.display_name AS profile_name, profile.slug AS profile_slug,
+                    claimant.display_name AS claimant_name, reviewer.display_name AS reviewer_name
+             FROM profile_claim_requests claims
+             INNER JOIN users profile ON profile.id = claims.profile_user_id
+             INNER JOIN users claimant ON claimant.id = claims.claimant_user_id
+             LEFT JOIN users reviewer ON reviewer.id = claims.reviewed_by_user_id
+             ORDER BY claims.status = \'pending\' DESC, claims.created_at DESC'
+        )->fetchAll();
+    }
+
+    public function reviewProfileClaim(int $claimId, string $status, int $reviewerId): void
+    {
+        if (!in_array($status, ['approved', 'rejected'], true)) {
+            throw new InvalidArgumentException('Invalid claim review status.');
+        }
+        $this->pdo->beginTransaction();
+        try {
+            $stmt = $this->pdo->prepare('SELECT profile_user_id, claimant_user_id FROM profile_claim_requests WHERE id = :id');
+            $stmt->execute(['id' => $claimId]);
+            $claim = $stmt->fetch();
+            if (!$claim) {
+                throw new InvalidArgumentException('Claim request not found.');
+            }
+            $this->pdo->prepare('UPDATE profile_claim_requests SET status = :status, reviewed_by_user_id = :reviewer, reviewed_at = CURRENT_TIMESTAMP WHERE id = :id')
+                ->execute(['status' => $status, 'reviewer' => $reviewerId, 'id' => $claimId]);
+            if ($status === 'approved') {
+                $this->pdo->prepare('UPDATE users SET claimed_by_user_id = :claimant, is_claimable = 0 WHERE id = :profile')
+                    ->execute(['claimant' => (int)$claim['claimant_user_id'], 'profile' => (int)$claim['profile_user_id']]);
+            }
+            $this->pdo->commit();
+        } catch (Throwable $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
     public function touchLastLogin(int $id): void

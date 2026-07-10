@@ -45,6 +45,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
         ]);
         $audit->log('contact.submitted', $currentUser ? (int)$currentUser['id'] : null, 'contact_submission', (string)$submissionId);
+        $notifications->create(null, 'form.submitted', 'New contact submission', $subject !== '' ? $subject : 'Contact form', '/admin/contact-submissions');
+        $webhookDispatcher->dispatch('form.submitted', ['submission_id' => $submissionId, 'form_id' => (int)$form['id'], 'status' => $status]);
 
         $recipient = trim((string)$form['recipient_email']);
         if ($recipient !== '' && (bool)$form['notify_on_submit']) {

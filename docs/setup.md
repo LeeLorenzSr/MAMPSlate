@@ -38,7 +38,7 @@ administrator account created during setup.
    - **Test database** — connects to the named database and reports whether the
      schema is already installed.
 3. **Initialize schema** — runs the migration runner, which applies pending
-   `sql_init/001`–`021` migrations in order (idempotent; safe to re-run) and
+   `sql_init/001`–`022` migrations in order (idempotent; safe to re-run) and
    records each in a `schema_migrations` ledger. Per-file results are shown; it
    stops at the first error.
 4. **Administrator account** — sets the initial administrator email and
@@ -72,7 +72,7 @@ After the redirect, use the administrator account to review:
   installed, so the per-request `SHOW TABLES` check is skipped (an optimization).
   The marker is also created lazily on the first healthy request, so manual
   setups benefit too. It is removed and re-verified each time setup saves.
-- The database schema (`sql_init/001`–`021`) and the initial administrator row.
+- The database schema (`sql_init/001`–`022`) and the initial administrator row.
 
 ## Permissions required
 
@@ -93,6 +93,6 @@ destructive `000_reset_dev.sql` is intentionally **not** run from the wizard.
 
 If you prefer not to use the wizard, the manual steps remain documented in the
 [Deployment Checklist](deployment-checklist.md): create the database and a
-least-privilege user, apply `sql_init/001`–`021`, and copy
+least-privilege user, apply `sql_init/001`–`022`, and copy
 `config/config.example.php` to `config/config.local.php` with credentials
 filled in.

@@ -5,9 +5,9 @@
 # MAMPSlate CMS
 
 A small, dependency-free PHP/MySQL base CMS for MAMP/LAMP. Designed to be copied
-into a new project and specialized — not forked. Server-rendered pages, PDO
-repositories, capability-based authorization, Markdown articles, a media
-library, logged-in comments, OAuth login, and SEO-friendly extensionless URLs.
+into a new project and specialized, not forked. Server-rendered pages, PDO
+repositories, capability-based authorization, Markdown content, and
+SEO-friendly extensionless URLs provide a safe foundation for customization.
 
 <p align="center">
   <img src="public_html/assets/img/hero.jpg" alt="MAMPSlate hero banner">
@@ -20,23 +20,21 @@ See [`docs/`](docs/README.md) for full documentation, starting with
 ## Stack
 
 - PHP 8.2+ (pdo_mysql, mbstring required; gd and curl conditionally)
-- MySQL 5.7+ / MariaDB 10.4+ (SQL targets 5.7; see `docs/database-specification.md`)
+- MySQL 5.7+ / MariaDB 10.4+ (SQL targets MySQL 5.7)
 - Apache 2.4 with `mod_rewrite`
 
 ## Quick start (MAMP)
 
 1. Point the document root at `public_html/`.
-2. Visit `http://localhost/`. If the database isn't configured yet, you're
-   redirected to `/setup` — the first-run wizard. See
-   [`docs/setup.md`](docs/setup.md).
-3. In the wizard: create a site-master password, enter MySQL credentials, create
-   the database, initialize the schema, create the admin account, and save.
-4. You're dropped into the running site. Sign in with the admin account you just
-   created.
+2. Visit `http://localhost/`; the first-run wizard opens if the database is not
+   configured.
+3. Create the site-master password, configure MySQL, initialize the schema, and
+   create the administrator account.
+4. Sign in, visit `/admin/getting-started`, and complete the launch checklist.
 
-Prefer the manual route? Create the database and a least-privilege MySQL user,
-apply `sql_init/001`–`021`, and copy `config/config.example.php` →
-`config/config.local.php` with credentials.
+For a manual install, create the database and a least-privilege MySQL user,
+apply `sql_init/001` through `022`, then copy `config/config.example.php` to
+`config/config.local.php` with the required credentials.
 
 ## Layout
 
@@ -45,22 +43,22 @@ public_html/   document root (routes, assets, uploads)
 includes/      bootstrap, repositories, auth, renderers (not web-accessible)
 config/        local config and secrets (not web-accessible)
 sql_init/      schema, seed, and migration scripts
+modules/       optional local module manifests
 docs/          specifications and operating notes
 ```
 
 ## Features
 
-- Capability-based roles (`docs/permissions.md`)
-- Modal login, signup (open/restricted/invite/off modes), Google/GitHub OAuth (`docs/oauth-setup.md`)
-- Profile pictures, self-service password change, per-role API keys
-- Markdown articles with media (`docs/content-management.md`)
-- Static pages, navigation menus, admin dashboard, site settings UI
-- Public + admin search
-- Threaded comments with moderation
-- SEO: sitemap, robots, RSS, Open Graph, JSON-LD
-- Light/dark theme toggle
-- Security hardening: audit log, password reset, rate limiting, CSP/security headers, mailer abstraction
-- Content revisions (history + restore), migration runner, verification runner, versioned CRUD API v1
-- Media usage tracking + orphan cleanup; backup/restore runbook + CLI helpers
-- Feature toggles in `config` to disable unused subsystems
-- Extension checklist for AI-agent specialization (`docs/extending-the-cms.md`)
+- Capability-based roles, modal auth, signup modes, and Google/GitHub OAuth
+- Articles, pages, listings, Markdown, revisions, menus, media, comments, and SEO
+- Generic custom fields, relationships, nested taxonomies, managed links,
+  allowlisted embeds, collections, workflow states, and scheduling
+- Theme/branding settings: logo, color, font, homepage ordering, footer, and social links
+- Optional documents/audio/video, notifications, opt-in signed webhooks,
+  privacy-friendly outbound click analytics, and accessibility checks
+- Public/admin search filters, modular sitemap registry, backup/export tooling,
+  API v1, MCP management, and operation dashboards
+- Local module manifests, a subsystem scaffold command, and generated OpenAPI route inventory
+
+Run `php tools/verify.php` before handoff. Use `php tools/make_subsystem.php
+<name> --dry-run` before starting a project-specific subsystem.

@@ -9,7 +9,7 @@ requireFeature('listings');
 $currentUser = $auth->user();
 $slug = (string)($_GET['slug'] ?? '');
 $item = $listings->findBySlug($slug);
-if (!$item || $item['status'] !== 'published' || empty($item['published_at']) || strtotime((string)$item['published_at']) > time()) {
+if (!$item || !contentIsPublic($item)) {
     http_response_code(404);
     exit('Listing not found.');
 }
@@ -50,5 +50,6 @@ renderHeader($item['meta_title'] ?: $item['title'], $currentUser, [
             <?php endforeach; ?>
         </p>
     <?php endif; ?>
+    <?php renderPublicContentExtensions('listing', (int)$item['id']); ?>
 </article>
 <?php renderFooter();

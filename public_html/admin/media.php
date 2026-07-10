@@ -26,7 +26,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                 throw new RuntimeException('The file is larger than the maximum allowed size.');
             }
 
-            $meta = $imageProcessor->processUpload($_FILES['file'], $maxWidth);
+            $meta = $mediaUpload->process($_FILES['file'], $maxWidth);
             $mediaId = $media->create(
                 (int)$currentUser['id'],
                 $meta['stored_name'],
@@ -36,7 +36,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                 $meta['width'],
                 $meta['height']
             );
-            $message = 'Image uploaded.';
+            $message = 'Media uploaded.';
         }
 
         if ($action === 'update') {
@@ -89,13 +89,13 @@ renderHeader('Media library', $currentUser);
 <?php endif; ?>
 
 <section class="panel">
-    <h2>Upload image</h2>
+    <h2>Upload media</h2>
     <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
         <input type="hidden" name="action" value="upload">
         <label>
-            Image file (JPEG, PNG, GIF, WebP; max <?= number_format($maxBytes) ?> bytes)
-            <input type="file" name="file" accept="image/*" required>
+            Image, or enabled document/audio/video file (max <?= number_format($maxBytes) ?> bytes)
+            <input type="file" name="file" accept="image/*,application/pdf,audio/*,video/*" required>
         </label>
         <button type="submit">Upload</button>
     </form>
@@ -109,9 +109,15 @@ renderHeader('Media library', $currentUser);
     <div class="media-grid">
         <?php foreach ($allMedia as $item): ?>
             <div class="media-card">
-                <a href="/uploads/<?= e($item['stored_name']) ?>" target="_blank">
-                    <img src="/uploads/<?= e($item['stored_name']) ?>" alt="<?= e($item['alt_text']) ?>" loading="lazy">
-                </a>
+                <?php if (str_starts_with((string)$item['mime_type'], 'image/')): ?>
+                    <a href="/uploads/<?= e($item['stored_name']) ?>" target="_blank"><img src="/uploads/<?= e($item['stored_name']) ?>" alt="<?= e($item['alt_text']) ?>" loading="lazy"></a>
+                <?php elseif (str_starts_with((string)$item['mime_type'], 'audio/')): ?>
+                    <audio controls src="/uploads/<?= e($item['stored_name']) ?>"></audio>
+                <?php elseif (str_starts_with((string)$item['mime_type'], 'video/')): ?>
+                    <video controls preload="metadata" src="/uploads/<?= e($item['stored_name']) ?>"></video>
+                <?php else: ?>
+                    <p><a href="/uploads/<?= e($item['stored_name']) ?>" target="_blank"><i class="bi bi-file-earmark"></i> <?= e($item['original_name']) ?></a></p>
+                <?php endif; ?>
                 <form method="post" class="media-meta-form">
                     <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
                     <input type="hidden" name="action" value="update">

@@ -142,6 +142,12 @@ with config fallback, so the system works before any setting is saved. Secrets
 
 ## Feature toggles
 
+The current feature list also includes `custom_fields`, `relationships`,
+`taxonomies`, `link_manager`, `embeds`, `collections`, `webhooks`, `analytics`,
+`accessibility_checker`, and optional `media_documents`, `media_audio`, and
+`media_video`. See [extensibility.md](extensibility.md) and
+[operations-and-integrations.md](operations-and-integrations.md).
+
 The `features` config block can disable unused subsystems when this base is
 copied to a new project: `articles`, `pages`, `comments`, `media`,
 `categories`, `tags`, `seo_sitemap`, `rss_feed`, `listings`, and

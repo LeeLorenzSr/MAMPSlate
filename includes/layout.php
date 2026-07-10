@@ -10,6 +10,20 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     $seo = $seo ?? [];
     $nonce = csp_nonce();
     security_headers($nonce);
+    $accentColor = (string)setting('theme.accent_color', '#2f6fec');
+    if (!preg_match('/^#[0-9a-fA-F]{6}$/', $accentColor)) {
+        $accentColor = '#2f6fec';
+    }
+    $fontFamily = match (setting('theme.font_family', 'montserrat')) {
+        'system' => 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        'serif' => 'Georgia, "Times New Roman", serif',
+        default => "'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
+    };
+    $logo = null;
+    $logoMediaId = (int)setting('theme.logo_media_id', 0);
+    if ($logoMediaId > 0 && isset($GLOBALS['media'])) {
+        $logo = $GLOBALS['media']->findById($logoMediaId);
+    }
 
     $headerMenu = $GLOBALS['menus']?->itemsForLocation('header') ?? [];
 
@@ -77,12 +91,17 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
     <meta name="theme-color" content="#0f131a" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/assets/site.css?v=20260702-8">
+    <style nonce="<?= e($nonce) ?>">:root { --primary: <?= $accentColor ?>; --primary-dark: <?= $accentColor ?>; --font-sans: <?= $fontFamily ?>; }</style>
     <link rel="alternate" type="application/rss+xml" title="<?= e($appName) ?>" href="<?= e($baseUrl . '/feed') ?>">
 </head>
 <body>
 <header class="site-header">
     <a class="brand" href="/" aria-label="<?= e($appName) ?> — home">
-        <span class="brand-logo" aria-hidden="true"></span>
+        <?php if ($logo && str_starts_with((string)$logo['mime_type'], 'image/')): ?>
+            <img class="brand-logo-image" src="/uploads/<?= e($logo['stored_name']) ?>" alt="">
+        <?php else: ?>
+            <span class="brand-logo" aria-hidden="true"></span>
+        <?php endif; ?>
         <span class="brand-name"><?= e($appName) ?></span>
     </a>
     <?php if ($headerMenu): ?>
@@ -138,6 +157,7 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
                 <?php if (in_array('user.manage', $caps, true)): ?>
                     <a href="/admin/users"><i class="bi bi-people"></i> Users</a>
                     <a href="/admin/invites"><i class="bi bi-person-plus"></i> Invites</a>
+                    <a href="/admin/profile-claims"><i class="bi bi-patch-check"></i> Profile claims</a>
                 <?php endif; ?>
                 <?php if (in_array('role.manage', $caps, true)): ?>
                     <a href="/admin/roles"><i class="bi bi-shield-check"></i> Roles</a>
@@ -157,6 +177,26 @@ function renderHeader(string $title, ?array $user = null, ?array $seo = null): v
                 <?php if (in_array('settings.manage', $caps, true)): ?>
                     <a href="/admin/settings"><i class="bi bi-gear"></i> Settings</a>
                     <a href="/admin/migrations"><i class="bi bi-database-up"></i> Migrations</a>
+                    <a href="/admin/getting-started"><i class="bi bi-signpost-split"></i> Getting started</a>
+                    <a href="/admin/theme-preview"><i class="bi bi-palette"></i> Theme preview</a>
+                <?php endif; ?>
+                <?php if (in_array('content.model.manage', $caps, true) && feature('custom_fields')): ?>
+                    <a href="/admin/content-model"><i class="bi bi-input-cursor-text"></i> Content model</a>
+                <?php endif; ?>
+                <?php if (in_array('taxonomy.manage', $caps, true) && feature('taxonomies')): ?>
+                    <a href="/admin/taxonomies"><i class="bi bi-diagram-3"></i> Taxonomies</a>
+                <?php endif; ?>
+                <?php if (in_array('collection.manage', $caps, true) && feature('collections')): ?>
+                    <a href="/admin/collections"><i class="bi bi-bookmark-star"></i> Collections</a>
+                <?php endif; ?>
+                <?php if (in_array('webhook.manage', $caps, true) && feature('webhooks')): ?>
+                    <a href="/admin/webhooks"><i class="bi bi-broadcast"></i> Webhooks</a>
+                <?php endif; ?>
+                <?php if (in_array('notification.view', $caps, true)): ?>
+                    <a href="/admin/notifications"><i class="bi bi-bell"></i> Notifications</a>
+                <?php endif; ?>
+                <?php if (in_array('accessibility.view', $caps, true) && feature('accessibility_checker')): ?>
+                    <a href="/admin/accessibility"><i class="bi bi-universal-access"></i> Accessibility</a>
                 <?php endif; ?>
                 <?php if (in_array('system.view', $caps, true)): ?>
                     <a href="/admin/system-status"><i class="bi bi-activity"></i> System status</a>
@@ -282,6 +322,9 @@ function renderFooter(): void
     $nonce = $GLOBALS['csp_nonce'] ?? csp_nonce();
     $appName = setting('site.name', $GLOBALS['config']['app']['name'] ?? 'MAMPSlate CMS');
     $footerMenu = $GLOBALS['menus']?->itemsForLocation('footer') ?? [];
+    $footerText = trim((string)setting('theme.footer_text', ''));
+    $socialLinks = json_decode((string)setting('theme.social_links', '[]'), true);
+    $socialLinks = is_array($socialLinks) ? $socialLinks : [];
     ?>
 </main>
 <footer class="site-footer">
@@ -292,8 +335,11 @@ function renderFooter(): void
             <?php foreach ($footerMenu as $item): ?>
                 <a href="<?= e($item['url']) ?>"><?= e($item['label']) ?></a>
             <?php endforeach; ?>
+            <?php foreach ($socialLinks as $item): ?>
+                <?php if (!empty($item['label']) && !empty($item['url'])): ?><a href="<?= e($item['url']) ?>" target="_blank" rel="noopener noreferrer"><?= e($item['label']) ?></a><?php endif; ?>
+            <?php endforeach; ?>
         </nav>
-        <p class="muted"><i class="bi bi-globe2"></i> &copy; <?= e(date('Y')) ?> <?= e($appName) ?></p>
+        <p class="muted"><i class="bi bi-globe2"></i> <?= e($footerText !== '' ? $footerText : ('© ' . date('Y') . ' ' . $appName)) ?></p>
     </div>
 </footer>
 <script src="/assets/theme.js?v=20260702-3" defer></script>

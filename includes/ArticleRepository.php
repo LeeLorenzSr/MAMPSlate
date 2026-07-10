@@ -276,8 +276,8 @@ final class ArticleRepository
                 LEFT JOIN categories ON categories.id = articles.category_id
                 LEFT JOIN media ON media.id = articles.cover_media_id';
 
-        $where = ['articles.status = :status', 'articles.published_at IS NOT NULL', 'articles.published_at <= CURRENT_TIMESTAMP'];
-        $params = ['status' => 'published'];
+        $where = ["articles.status IN ('published', 'scheduled')", 'articles.published_at IS NOT NULL', 'articles.published_at <= CURRENT_TIMESTAMP'];
+        $params = [];
 
         if ($categorySlug !== null) {
             $where[] = 'categories.slug = :category_slug';
@@ -310,8 +310,8 @@ final class ArticleRepository
         $sql = 'SELECT COUNT(DISTINCT articles.id)
                 FROM articles
                 LEFT JOIN categories ON categories.id = articles.category_id';
-        $where = ['articles.status = :status', 'articles.published_at IS NOT NULL', 'articles.published_at <= CURRENT_TIMESTAMP'];
-        $params = ['status' => 'published'];
+        $where = ["articles.status IN ('published', 'scheduled')", 'articles.published_at IS NOT NULL', 'articles.published_at <= CURRENT_TIMESTAMP'];
+        $params = [];
 
         if ($categorySlug !== null) {
             $where[] = 'categories.slug = :category_slug';
@@ -347,14 +347,13 @@ final class ArticleRepository
              FROM articles
              LEFT JOIN categories ON categories.id = articles.category_id
              LEFT JOIN media ON media.id = articles.cover_media_id
-             WHERE articles.status = :status
+             WHERE articles.status IN (\'published\', \'scheduled\')
                AND articles.published_at IS NOT NULL
                AND articles.published_at <= CURRENT_TIMESTAMP
                AND articles.author_user_id = :author_id
              ORDER BY articles.published_at DESC
              LIMIT :limit OFFSET :offset'
         );
-        $stmt->bindValue('status', 'published');
         $stmt->bindValue('author_id', $authorId, PDO::PARAM_INT);
         $stmt->bindValue('limit', $perPage, PDO::PARAM_INT);
         $stmt->bindValue('offset', max(0, ($page - 1) * $perPage), PDO::PARAM_INT);
@@ -367,12 +366,11 @@ final class ArticleRepository
     {
         $stmt = $this->pdo->prepare(
             'SELECT COUNT(*) FROM articles
-             WHERE articles.status = :status
+             WHERE articles.status IN (\'published\', \'scheduled\')
                AND articles.published_at IS NOT NULL
                AND articles.published_at <= CURRENT_TIMESTAMP
                AND articles.author_user_id = :author_id'
         );
-        $stmt->bindValue('status', 'published');
         $stmt->bindValue('author_id', $authorId, PDO::PARAM_INT);
         $stmt->execute();
 
@@ -387,14 +385,13 @@ final class ArticleRepository
                    articles.published_at, media.stored_name AS cover
              FROM articles
              LEFT JOIN media ON media.id = articles.cover_media_id
-             WHERE articles.status = :status
+             WHERE articles.status IN (\'published\', \'scheduled\')
                AND articles.published_at IS NOT NULL
                AND articles.published_at <= CURRENT_TIMESTAMP
                AND (articles.title LIKE :q1 OR articles.summary LIKE :q2 OR articles.body_markdown LIKE :q3)
              ORDER BY articles.published_at DESC
              LIMIT :limit'
         );
-        $stmt->bindValue('status', 'published');
         $stmt->bindValue('q1', $like);
         $stmt->bindValue('q2', $like);
         $stmt->bindValue('q3', $like);

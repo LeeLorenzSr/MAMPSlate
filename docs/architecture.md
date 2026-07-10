@@ -119,6 +119,19 @@ lets a copied project disable unused subsystems. Disabled features hide their
 admin nav and return 404 on their routes via the `feature()` /
 `requireFeature()` helpers in `includes/http.php`.
 
+## Extensibility and operational extensions
+
+Migration 022 adds a generic metadata/relationship/taxonomy/link/embed/
+collection layer. `ContentExtensionRepository` owns the polymorphic extension
+tables; `SitemapRegistry` merges core and local-module sitemap entries; and
+`ModuleRegistry` loads trusted manifests from `modules/*/module.php`.
+
+The public/admin/API routes share the same workflow and scheduling predicate:
+scheduled content is visible only once `published_at <= CURRENT_TIMESTAMP`.
+The settings screen owns lightweight branding. Optional media, notifications,
+webhooks, aggregate analytics, and accessibility checks are behind feature
+toggles and documented in [operations-and-integrations.md](operations-and-integrations.md).
+
 ## Private Code
 
 The following folders must not be web-accessible:

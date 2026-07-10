@@ -83,6 +83,8 @@ if ($invite !== null) {
 }
 
 $audit->log($active ? 'user.signup' : 'user.signup.pending', $login ? $userId : null, 'user', (string)$userId, ['mode' => $mode]);
+$notifications->create(null, 'user.signed_up', $active ? 'New user signup' : 'New user awaiting approval', '', '/admin/users');
+$webhookDispatcher->dispatch('user.signed_up', ['user_id' => $userId, 'active' => $active, 'mode' => $mode]);
 
 if (!$active) {
     jsonResponse(['ok' => true, 'redirect' => '/?signup=pending']);

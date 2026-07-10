@@ -122,11 +122,11 @@ final class ListingRepository
     public function listPublished(int $page, int $perPage, ?string $tag = null): array
     {
         $where = [
-            'listings.status = :status',
+            "listings.status IN ('published', 'scheduled')",
             'listings.published_at IS NOT NULL',
             'listings.published_at <= CURRENT_TIMESTAMP',
         ];
-        $params = ['status' => 'published'];
+        $params = [];
         if ($tag !== null && $tag !== '') {
             $where[] = 'listings.tags_json LIKE :tag';
             $params['tag'] = '%"' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $tag) . '"%';
@@ -155,11 +155,11 @@ final class ListingRepository
     public function countPublished(?string $tag = null): int
     {
         $where = [
-            'status = :status',
+            "status IN ('published', 'scheduled')",
             'published_at IS NOT NULL',
             'published_at <= CURRENT_TIMESTAMP',
         ];
-        $params = ['status' => 'published'];
+        $params = [];
         if ($tag !== null && $tag !== '') {
             $where[] = 'tags_json LIKE :tag';
             $params['tag'] = '%"' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $tag) . '"%';
@@ -188,14 +188,13 @@ final class ListingRepository
                     listings.tags_json, listings.published_at, media.stored_name AS image
              FROM listings
              LEFT JOIN media ON media.id = listings.image_media_id
-             WHERE listings.status = :status
+             WHERE listings.status IN (\'published\', \'scheduled\')
                AND listings.published_at IS NOT NULL
                AND listings.published_at <= CURRENT_TIMESTAMP
                AND (listings.title LIKE :q1 OR listings.summary LIKE :q2 OR listings.body_markdown LIKE :q3 OR listings.tags_json LIKE :q4)
              ORDER BY listings.published_at DESC
              LIMIT :limit'
         );
-        $stmt->bindValue('status', 'published');
         $stmt->bindValue('q1', $like);
         $stmt->bindValue('q2', $like);
         $stmt->bindValue('q3', $like);
@@ -232,7 +231,7 @@ final class ListingRepository
             'links_json' => json_encode($this->normalizeLinks($data['links'] ?? []), JSON_UNESCAPED_SLASHES) ?: '[]',
             'tags_json' => json_encode($this->normalizeTags($data['tags'] ?? []), JSON_UNESCAPED_SLASHES) ?: '[]',
             'owner_user_id' => !empty($data['owner_user_id']) ? (int)$data['owner_user_id'] : null,
-            'status' => in_array(($data['status'] ?? 'draft'), ['draft', 'published', 'archived'], true) ? ($data['status'] ?? 'draft') : 'draft',
+            'status' => in_array(($data['status'] ?? 'draft'), contentWorkflowStatuses(), true) ? ($data['status'] ?? 'draft') : 'draft',
             'meta_title' => trim((string)($data['meta_title'] ?? '')),
             'meta_description' => trim((string)($data['meta_description'] ?? '')),
             'published_at' => $data['published_at'] ?? null,

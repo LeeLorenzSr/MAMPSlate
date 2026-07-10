@@ -130,10 +130,26 @@ Applied in order under `sql_init/`:
 | `019_user_email_privacy_default_hidden.sql` | Makes email privacy hidden by default. |
 | `020_starter_subsystems.sql` | Listings, contact forms/submissions, operations capabilities, and feature flags. |
 | `021_seed_author_moderator_roles.sql` | Author and moderator default roles. |
+| `022_extensibility_and_operations.sql` | Generic fields, relationships, taxonomies, links, embeds, collections, profile claims, and operations primitives. |
 
 The `schema_migrations` ledger table is created by the migration runner itself
 (see [setup.md](setup.md) and `includes/MigrationRunner.php`), not by a numbered
 file.
+
+## Extensibility and operations tables
+
+Migration `022_extensibility_and_operations.sql` adds
+`content_field_definitions`/`content_field_values` for typed metadata,
+`entity_relationships`, `taxonomies`/`taxonomy_terms`/`entity_terms`,
+`external_links`, `content_embeds`, and curated content collections. It also
+adds `webhook_endpoints`/`webhook_deliveries`, `notifications`, and aggregate
+privacy-preserving `analytics_events` records. All polymorphic content links
+are application-owned so local modules can add an entity type without a new core
+foreign-key migration.
+
+The same migration extends `users` with profile type, visibility, claimability,
+claimant, and additional social-link JSON fields, and adds
+`profile_claim_requests` for administrator-reviewed organization claims.
 
 All migrations are idempotent (`CREATE TABLE IF NOT EXISTS`, `ON DUPLICATE KEY
 UPDATE`). If schema changes become frequent, add a migrations table and a small

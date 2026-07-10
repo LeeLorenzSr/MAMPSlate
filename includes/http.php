@@ -45,6 +45,7 @@ function security_headers(?string $nonce = null): void
         . "img-src 'self' data:; "
         . "font-src 'self' https://cdn.jsdelivr.net; "
         . "connect-src 'self'; "
+        . "frame-src 'self' https://www.youtube.com https://open.spotify.com; "
         . "object-src 'none'; "
         . "base-uri 'self'; "
         . "form-action 'self'; "

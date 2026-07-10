@@ -45,6 +45,15 @@ final class CmsMcpTools
         $r->add(new McpTool('cms.list_menus', 'List menus and their items.', $obj, ['menu.manage'], null, null, false, self::fn('listMenus')));
 
         $r->add(new McpTool('cms.get_settings_public_or_nonsecret', 'Non-secret site settings and feature toggles.', $obj, ['settings.manage'], null, null, false, self::fn('getSettings')));
+        $r->add(new McpTool('cms.get_content_extensions', 'Get custom fields, terms, managed links, embeds, and relationships for content.', self::schema([
+            'entity_type' => ['type' => 'string', 'enum' => ['article', 'page', 'listing']], 'id' => ['type' => 'integer'],
+        ], ['entity_type', 'id']), ['article.create', 'page.create', 'listing.manage'], 'custom_fields', null, false, self::fn('getContentExtensions')));
+        $r->add(new McpTool('cms.update_content_extensions', 'Replace selected generic extension groups on existing content.', self::schema([
+            'entity_type' => ['type' => 'string', 'enum' => ['article', 'page', 'listing']], 'id' => ['type' => 'integer'],
+            'custom_fields' => ['type' => 'object'], 'term_ids' => ['type' => 'array', 'items' => ['type' => 'integer']],
+            'links' => ['type' => 'array', 'items' => ['type' => 'object']], 'embeds' => ['type' => 'array', 'items' => ['type' => 'object']],
+            'relationships' => ['type' => 'array', 'items' => ['type' => 'object']],
+        ], ['entity_type', 'id']), ['article.create', 'page.create', 'listing.manage'], 'custom_fields', null, true, self::fn('updateContentExtensions')));
 
         // ---- Article mutation --------------------------------------------
         $r->add(new McpTool('cms.create_article', 'Create a draft or archived article (Markdown body).', self::schema([
@@ -204,6 +213,8 @@ final class CmsMcpTools
                 'articles' => feature('articles'), 'pages' => feature('pages'),
                 'media' => feature('media'), 'comments' => feature('comments'),
                 'listings' => feature('listings'), 'contact_forms' => feature('contact_forms'),
+                'custom_fields' => feature('custom_fields'), 'taxonomies' => feature('taxonomies'),
+                'collections' => feature('collections'), 'embeds' => feature('embeds'),
             ],
         ];
     }
@@ -322,8 +333,54 @@ final class CmsMcpTools
                 'categories' => feature('categories'), 'tags' => feature('tags'),
                 'listings' => feature('listings'), 'contact_forms' => feature('contact_forms'),
                 'seo_sitemap' => feature('seo_sitemap'), 'rss_feed' => feature('rss_feed'),
+                'custom_fields' => feature('custom_fields'), 'taxonomies' => feature('taxonomies'),
+                'collections' => feature('collections'), 'embeds' => feature('embeds'),
             ],
         ];
+    }
+
+    public static function getContentExtensions(array $a, array $ctx): array
+    {
+        [$type, $entity] = self::extensionEntity($a);
+        return ['entity_type' => $type, 'id' => (int)$entity['id'], 'extensions' => $GLOBALS['contentExtensions']->extensionPayload($type, (int)$entity['id'], false)];
+    }
+
+    public static function updateContentExtensions(array $a, array $ctx): array
+    {
+        [$type, $entity] = self::extensionEntity($a);
+        if ($type === 'listing') {
+            if (!in_array('listing.manage', $ctx['caps'], true)) { throw new McpException('Missing capability: listing.manage'); }
+        } else {
+            self::requireEdit($ctx, (int)$entity['author_user_id'], $type);
+        }
+        $groups = ['custom_fields', 'term_ids', 'links', 'embeds', 'relationships'];
+        $changed = array_values(array_intersect($groups, array_keys($a)));
+        if ($changed === []) { throw new McpException('Provide at least one extension group to update.'); }
+        if ($ctx['dryRun']) { return ['dry_run' => true, 'planned' => 'update content extensions', 'entity_type' => $type, 'id' => (int)$entity['id'], 'groups' => $changed]; }
+        try {
+            $extensions = $GLOBALS['contentExtensions'];
+            $id = (int)$entity['id'];
+            if (array_key_exists('custom_fields', $a)) { $extensions->saveFieldValues($type, $id, (array)$a['custom_fields']); }
+            if (array_key_exists('term_ids', $a)) { $extensions->saveTerms($type, $id, (array)$a['term_ids']); }
+            if (array_key_exists('links', $a)) { $extensions->saveLinks($type, $id, (array)$a['links']); }
+            if (array_key_exists('embeds', $a)) { $extensions->saveEmbeds($type, $id, (array)$a['embeds']); }
+            if (array_key_exists('relationships', $a)) { $extensions->saveRelationships($type, $id, (array)$a['relationships'], (int)$ctx['user']['id']); }
+        } catch (InvalidArgumentException $e) { throw new McpException($e->getMessage()); }
+        self::audit('content.extensions.updated', $ctx, (int)$ctx['user']['id'], $type, (string)$entity['id'], ['tool' => 'cms.update_content_extensions', 'groups' => implode(',', $changed)]);
+        return ['entity_type' => $type, 'id' => (int)$entity['id'], 'updated' => $changed];
+    }
+
+    private static function extensionEntity(array $args): array
+    {
+        $type = (string)($args['entity_type'] ?? '');
+        $id = (int)($args['id'] ?? 0);
+        $repository = match ($type) {
+            'article' => $GLOBALS['articles'], 'page' => $GLOBALS['pages'], 'listing' => $GLOBALS['listings'], default => null,
+        };
+        if ($repository === null || $id < 1 || !($entity = $repository->findById($id))) {
+            throw new McpException('Content not found.');
+        }
+        return [$type, $entity];
     }
 
     // ---- article mutation -------------------------------------------------

@@ -20,6 +20,11 @@ $recentAudit = $auth->can('audit.view') ? $audit->list([], 1, 5) : [];
 $mediaCount = feature('media') ? $media->count() : 0;
 $mediaStorage = feature('media') ? $media->totalStorage() : 0;
 $listingCounts = feature('listings') ? $listings->countByStatus() : ['draft' => 0, 'published' => 0, 'archived' => 0];
+$recentListings = feature('listings') && $auth->can('listing.manage') ? array_slice($listings->listForAdmin(), 0, 5) : [];
+$recentContactSubmissions = feature('contact_forms') && $auth->can('contact.manage') ? $contacts->submissions(null, 5) : [];
+$migrationStatus = $auth->can('settings.manage') ? $migrations->statusMap() : [];
+$migrationWarnings = array_filter($migrationStatus, fn($status) => ($status['status'] ?? '') !== 'success');
+$analyticsSummary = feature('analytics') ? $analytics->summary(30) : [];
 
 renderHeader('Dashboard', $currentUser);
 ?>
@@ -87,6 +92,22 @@ renderHeader('Dashboard', $currentUser);
         <?php endif; ?>
     </div>
 </section>
+
+<?php if ($recentListings): ?>
+<section class="panel"><h2>Recent listings</h2><div class="table-wrap"><table><thead><tr><th>Title</th><th>Status</th><th>Updated</th></tr></thead><tbody><?php foreach ($recentListings as $listing): ?><tr><td><a href="/admin/listing-edit?id=<?= (int)$listing['id'] ?>"><?= e($listing['title']) ?></a></td><td><?= e($listing['status']) ?></td><td><?= e($listing['updated_at']) ?></td></tr><?php endforeach; ?></tbody></table></div></section>
+<?php endif; ?>
+
+<?php if ($recentContactSubmissions): ?>
+<section class="panel"><h2>Recent contact submissions</h2><div class="table-wrap"><table><thead><tr><th>From</th><th>Subject</th><th>Status</th><th>When</th></tr></thead><tbody><?php foreach ($recentContactSubmissions as $submission): ?><tr><td><?= e($submission['name']) ?></td><td><?= e($submission['subject']) ?></td><td><?= e($submission['status']) ?></td><td><?= e($submission['created_at']) ?></td></tr><?php endforeach; ?></tbody></table></div><p><a href="/admin/contact-submissions">Review all submissions →</a></p></section>
+<?php endif; ?>
+
+<?php if ($migrationWarnings): ?>
+<section class="panel"><h2>Migration warnings</h2><ul><?php foreach ($migrationWarnings as $filename => $status): ?><li><code><?= e($filename) ?></code>: <?= e($status['status']) ?><?= !empty($status['error']) ? ' — ' . e($status['error']) : '' ?></li><?php endforeach; ?></ul><p><a href="/admin/migrations">Review migrations →</a></p></section>
+<?php endif; ?>
+
+<?php if ($analyticsSummary): ?>
+<section class="panel"><h2>Privacy-friendly analytics (30 days)</h2><ul><?php foreach ($analyticsSummary as $row): ?><li><?= e($row['event_name']) ?>: <?= (int)$row['total'] ?></li><?php endforeach; ?></ul><p class="muted">Only aggregate events are stored; no IP, user agent, referrer, or account identity is recorded for outbound clicks.</p></section>
+<?php endif; ?>
 
 <?php if (feature('comments') && $recentComments && $auth->can('comment.moderate')): ?>
 <section class="panel">

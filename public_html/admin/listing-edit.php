@@ -43,13 +43,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $slug = trim((string)($_POST['slug'] ?? '')) ?: $title;
         $slug = Slug::ensureUnique(fn($s, $exclude) => $listings->slugExists($s, $exclude), Slug::slugify($slug), $isNew ? null : $id);
         $status = (string)($_POST['status'] ?? 'draft');
-        if (!in_array($status, ['draft', 'published', 'archived'], true)) {
+        if (!in_array($status, contentWorkflowStatuses(), true)) {
             $status = 'draft';
         }
-        $publishedAt = $isNew ? null : $item['published_at'];
-        if ($status === 'published' && $publishedAt === null) {
-            $publishedAt = date('Y-m-d H:i:s');
-        }
+        $schedule = contentScheduleForStatus($status, $_POST['published_at'] ?? null, $isNew ? null : $item['published_at']);
+        $status = $schedule['status'];
+        $publishedAt = $schedule['published_at'];
 
         $data = [
             'title' => $title,
@@ -72,6 +71,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         } else {
             $listings->update($id, $data);
             $audit->log('listing.updated', (int)$currentUser['id'], 'listing', (string)$id);
+        }
+        saveContentExtensions('listing', $id, $_POST, (int)$currentUser['id']);
+        if (contentIsPublic($data) && ($isNew || !contentIsPublic($item))) {
+            $notifications->create(null, 'content.published', 'Listing published: ' . $title, '', '/listings/' . $slug);
+            $webhookDispatcher->dispatch('content.published', ['type' => 'listing', 'id' => $id, 'title' => $title, 'url' => '/listings/' . $slug]);
         }
         redirect('/admin/listings');
     } catch (Throwable $e) {
@@ -135,10 +139,14 @@ renderHeader($isNew ? 'New listing' : 'Edit listing', $currentUser);
             <label>
                 Status
                 <select name="status">
-                    <?php foreach (['draft', 'published', 'archived'] as $status): ?>
+                    <?php foreach (contentWorkflowStatuses() as $status): ?>
                         <option value="<?= e($status) ?>" <?= $item['status'] === $status ? 'selected' : '' ?>><?= e($status) ?></option>
                     <?php endforeach; ?>
                 </select>
+            </label>
+            <label>
+                Publish date and time
+                <input type="datetime-local" name="published_at" value="<?= !empty($item['published_at']) ? e(date('Y-m-d\\TH:i', strtotime($item['published_at']))) : '' ?>">
             </label>
             <label>
                 Tags
@@ -160,6 +168,7 @@ renderHeader($isNew ? 'New listing' : 'Edit listing', $currentUser);
                 <textarea name="meta_description" rows="2" maxlength="320"><?= e($item['meta_description']) ?></textarea>
             </label>
         </fieldset>
+        <?php renderContentExtensionEditor('listing', (int)$id); ?>
         <button type="submit">Save listing</button>
     </form>
 </section>

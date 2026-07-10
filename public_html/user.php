@@ -17,6 +17,28 @@ if (!$user || !(bool)$user['is_active']) {
     exit;
 }
 
+$canViewPrivate = $currentUser && ((int)$currentUser['id'] === (int)$user['id'] || (int)$currentUser['id'] === (int)($user['claimed_by_user_id'] ?? 0));
+if (($user['profile_visibility'] ?? 'public') === 'private' && !$canViewPrivate) {
+    http_response_code(404);
+    renderHeader('Not found', $currentUser);
+    echo '<p>The profile you were looking for is not available.</p>';
+    renderFooter();
+    exit;
+}
+
+$claimMessage = null;
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ($_POST['action'] ?? '') === 'claim_profile') {
+    requireValidCsrf();
+    if (!$currentUser || !$user['is_claimable'] || (int)$currentUser['id'] === (int)$user['id']) {
+        http_response_code(403);
+        exit('Forbidden');
+    }
+    $users->createProfileClaim((int)$user['id'], (int)$currentUser['id'], (string)($_POST['message'] ?? ''));
+    $audit->log('profile.claim_requested', (int)$currentUser['id'], 'user', (string)$user['id']);
+    $notifications->create(null, 'profile.claim_requested', 'Profile claim awaiting review', '', '/admin/profile-claims');
+    $claimMessage = 'Claim request submitted for review.';
+}
+
 $memberSince = date('F j, Y', strtotime($user['created_at']));
 
 // System badges: derived from existing fields, appended next to the name.
@@ -39,6 +61,13 @@ foreach ([
     'Website'  => $user['social_website'] ?? null,
 ] as $label => $url) {
     if ($url !== null && $url !== '' && in_array(parse_url($url, PHP_URL_SCHEME), ['http', 'https'], true)) {
+        $socialLinks[$label] = $url;
+    }
+}
+foreach (json_decode((string)($user['profile_social_json'] ?? '[]'), true) ?: [] as $link) {
+    $label = trim((string)($link['label'] ?? ''));
+    $url = trim((string)($link['url'] ?? ''));
+    if ($label !== '' && $url !== '' && in_array(parse_url($url, PHP_URL_SCHEME), ['http', 'https'], true)) {
         $socialLinks[$label] = $url;
     }
 }
@@ -83,6 +112,7 @@ renderHeader(
         <div class="profile-meta">
             <h2 class="profile-name">
                 <?= e($user['display_name']) ?>
+                <span class="badge"><?= e(ucfirst((string)($user['profile_type'] ?? 'creator'))) ?></span>
                 <?php foreach ($badges as $badge): ?>
                     <span class="badge"><?= e($badge) ?></span>
                 <?php endforeach; ?>
@@ -109,6 +139,10 @@ renderHeader(
             <?php endif; ?>
 
             <p class="muted profile-since">Member since <?= e($memberSince) ?></p>
+            <?php if ($claimMessage): ?><p class="notice success"><?= e($claimMessage) ?></p><?php endif; ?>
+            <?php if ($currentUser && !empty($user['is_claimable']) && (int)$currentUser['id'] !== (int)$user['id']): ?>
+                <form method="post" class="grid-form"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="action" value="claim_profile"><label>Claim message (optional)<textarea name="message" rows="2" maxlength="500"></textarea></label><button type="submit">Request claim</button></form>
+            <?php endif; ?>
         </div>
     </div>
 </section>

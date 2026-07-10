@@ -8,7 +8,7 @@ $currentUser = $auth->requireCapability('settings.manage');
 $message = null;
 $error = null;
 
-$featureToggles = ['articles', 'pages', 'comments', 'media', 'categories', 'tags', 'seo_sitemap', 'rss_feed'];
+$featureToggles = ['articles', 'pages', 'comments', 'media', 'categories', 'tags', 'seo_sitemap', 'rss_feed', 'custom_fields', 'relationships', 'taxonomies', 'link_manager', 'embeds', 'collections', 'webhooks', 'analytics', 'accessibility_checker', 'media_documents', 'media_audio', 'media_video'];
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     requireValidCsrf();
@@ -27,6 +27,21 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $commentsPerMinute = max(1, (int)($_POST['comments_per_minute'] ?? 5));
         $mediaMaxBytes = max(1, (int)($_POST['media_max_upload_bytes'] ?? 5242880));
         $mediaMaxWidth = max(0, (int)($_POST['media_image_max_width'] ?? 1600));
+        $accentColor = trim((string)($_POST['theme_accent_color'] ?? '#2f6fec'));
+        if (!preg_match('/^#[0-9a-fA-F]{6}$/', $accentColor)) {
+            throw new RuntimeException('Accent color must be a six-digit hex color.');
+        }
+        $fontFamily = (string)($_POST['theme_font_family'] ?? 'montserrat');
+        if (!in_array($fontFamily, ['montserrat', 'system', 'serif'], true)) {
+            $fontFamily = 'montserrat';
+        }
+        $socialLinks = [];
+        foreach (preg_split('/\r\n|\r|\n/', (string)($_POST['theme_social_links'] ?? '')) ?: [] as $line) {
+            [$label, $url] = array_pad(array_map('trim', explode('|', $line, 2)), 2, '');
+            if ($label === '' && $url === '') { continue; }
+            if ($label === '' || $url === '') { throw new RuntimeException('Each social link needs a label and URL.'); }
+            $socialLinks[] = ['label' => mb_substr($label, 0, 80), 'url' => ListingLinkNormalizer::normalizeUrl($url)];
+        }
 
         $kv = [
             'site.name' => $siteName,
@@ -38,6 +53,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             'comments_per_minute' => (string)$commentsPerMinute,
             'media_max_upload_bytes' => (string)$mediaMaxBytes,
             'media_image_max_width' => (string)$mediaMaxWidth,
+            'theme.accent_color' => $accentColor,
+            'theme.font_family' => $fontFamily,
+            'theme.logo_media_id' => (string)max(0, (int)($_POST['theme_logo_media_id'] ?? 0)),
+            'theme.homepage_layout' => in_array($_POST['theme_homepage_layout'] ?? '', ['articles', 'listings', 'mixed'], true) ? (string)$_POST['theme_homepage_layout'] : 'mixed',
+            'theme.footer_text' => mb_substr(trim((string)($_POST['theme_footer_text'] ?? '')), 0, 240),
+            'theme.social_links' => json_encode($socialLinks, JSON_UNESCAPED_SLASHES) ?: '[]',
         ];
 
         foreach ($featureToggles as $f) {
@@ -82,6 +103,38 @@ renderHeader('Site settings', $currentUser);
         <label>Default meta description
             <textarea name="default_meta_description" rows="2" maxlength="320"><?= e((string)setting('default_meta_description')) ?></textarea>
         </label>
+    </section>
+
+    <section class="panel">
+        <h2>Brand and layout</h2>
+        <label>Accent color
+            <input type="color" name="theme_accent_color" value="<?= e((string)setting('theme.accent_color', '#2f6fec')) ?>">
+        </label>
+        <label>Font family
+            <select name="theme_font_family">
+                <?php foreach (['montserrat' => 'Montserrat', 'system' => 'System sans', 'serif' => 'Editorial serif'] as $value => $label): ?>
+                    <option value="<?= e($value) ?>" <?= setting('theme.font_family', 'montserrat') === $value ? 'selected' : '' ?>><?= e($label) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+        <label>Logo media ID (optional)
+            <input type="number" min="0" name="theme_logo_media_id" value="<?= e((string)setting('theme.logo_media_id', '0')) ?>">
+        </label>
+        <label>Homepage layout
+            <select name="theme_homepage_layout">
+                <?php foreach (['mixed' => 'Mixed', 'articles' => 'Articles first', 'listings' => 'Listings first'] as $value => $label): ?>
+                    <option value="<?= e($value) ?>" <?= setting('theme.homepage_layout', 'mixed') === $value ? 'selected' : '' ?>><?= e($label) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </label>
+        <label>Footer text
+            <input type="text" name="theme_footer_text" value="<?= e((string)setting('theme.footer_text', '')) ?>" maxlength="240">
+        </label>
+        <label>Social links (one per line: Label | https://example.com)
+            <?php $socialLinks = json_decode((string)setting('theme.social_links', '[]'), true); ?>
+            <textarea name="theme_social_links" rows="3"><?php foreach (is_array($socialLinks) ? $socialLinks : [] as $socialLink) { echo e(($socialLink['label'] ?? '') . ' | ' . ($socialLink['url'] ?? '')) . "\n"; } ?></textarea>
+        </label>
+        <p class="muted">The header/footer preview updates on the next page load. Choose an uploaded logo by its media ID.</p>
     </section>
 
     <section class="panel">

@@ -178,6 +178,30 @@ h2 {
     background-size: contain;
     flex-shrink: 0;
 }
+
+.brand-logo-image {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    border-radius: 7px;
+}
+
+.metadata-list {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.35fr) 1fr;
+    gap: 8px 16px;
+}
+
+.metadata-list dt { font-weight: 700; }
+.metadata-list dd { margin: 0; }
+.embed-frame { position: relative; max-width: 760px; aspect-ratio: 16 / 9; margin: 14px 0; }
+.embed-frame iframe { width: 100%; height: 100%; border: 0; border-radius: var(--radius-sm); }
+.theme-preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; align-items: start; }
+.theme-swatch { min-height: 150px; padding: 18px; border-radius: var(--radius); display: grid; gap: 9px; align-content: start; }
+.theme-swatch img { width: 40px; height: 40px; object-fit: contain; }
+.theme-swatch-light { background: #f7f8fb; color: #162033; border: 1px solid #dfe4ed; }
+.theme-swatch-dark { background: #111722; color: #eef2f7; border: 1px solid #2b3444; }
+.theme-og-preview { width: 100%; max-width: 360px; aspect-ratio: 1.91 / 1; object-fit: cover; border-radius: var(--radius-sm); }
 [data-theme="dark"] .brand-logo {
     background-image: url('/assets/img/logo-dark.svg');
 }

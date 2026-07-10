@@ -93,6 +93,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $socialLinkedin = trim((string)($_POST['social_linkedin'] ?? ''));
             $socialWebsite = trim((string)($_POST['social_website'] ?? ''));
             $hideEmail = isset($_POST['hide_email']);
+            $profileType = (string)($_POST['profile_type'] ?? 'creator');
+            $profileVisibility = (string)($_POST['profile_visibility'] ?? 'public');
+            $isClaimable = $profileType === 'organization' && isset($_POST['is_claimable']);
+            $extraSocial = [];
+            foreach (preg_split('/\r\n|\r|\n/', (string)($_POST['profile_social_links'] ?? '')) ?: [] as $line) {
+                [$label, $url] = array_pad(array_map('trim', explode('|', $line, 2)), 2, '');
+                if ($label === '' && $url === '') { continue; }
+                if ($label === '' || $url === '' || !filter_var($url, FILTER_VALIDATE_URL) || !in_array(parse_url($url, PHP_URL_SCHEME), ['http', 'https'], true)) {
+                    throw new RuntimeException('Additional social links must use Label | valid http(s) URL.');
+                }
+                $extraSocial[] = ['label' => mb_substr($label, 0, 80), 'url' => mb_substr($url, 0, 2048)];
+            }
 
             if (mb_strlen($bio) > 250) {
                 throw new RuntimeException('Short bio must be 250 characters or fewer.');
@@ -118,7 +130,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                 $socialGithub,
                 $socialLinkedin,
                 $socialWebsite,
-                $hideEmail
+                $hideEmail,
+                $profileType,
+                $profileVisibility,
+                $isClaimable,
+                json_encode($extraSocial, JSON_UNESCAPED_SLASHES) ?: '[]'
             );
 
             // Audit: record which fields changed, without persisting the user's
@@ -142,6 +158,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             }
             if ($hideEmail !== (bool)($currentUser['hide_email'] ?? false)) {
                 $changed[] = 'hide_email';
+            }
+            foreach (['profile_type' => $profileType, 'profile_visibility' => $profileVisibility, 'is_claimable' => $isClaimable] as $field => $value) {
+                if ((string)($currentUser[$field] ?? '') !== (string)$value) { $changed[] = $field; }
             }
             $audit->log('profile.updated', (int)$currentUser['id'], 'user', (string)$currentUser['id'], [
                 'fields' => $changed,
@@ -268,6 +287,23 @@ renderHeader('Profile', $currentUser);
         <label>
             Website
             <input type="url" name="social_website" value="<?= e($currentUser['social_website'] ?? '') ?>" placeholder="https://yoursite.com">
+        </label>
+        <label>
+            Additional social links (one per line: Label | https://example.com)
+            <?php $extraSocial = json_decode((string)($currentUser['profile_social_json'] ?? '[]'), true); ?>
+            <textarea name="profile_social_links" rows="3"><?php foreach (is_array($extraSocial) ? $extraSocial : [] as $link) { echo e(($link['label'] ?? '') . ' | ' . ($link['url'] ?? '')) . "\n"; } ?></textarea>
+        </label>
+        <label>
+            Profile type
+            <select name="profile_type"><option value="creator" <?= ($currentUser['profile_type'] ?? 'creator') === 'creator' ? 'selected' : '' ?>>Creator</option><option value="organization" <?= ($currentUser['profile_type'] ?? '') === 'organization' ? 'selected' : '' ?>>Organization</option></select>
+        </label>
+        <label>
+            Visibility
+            <select name="profile_visibility"><option value="public" <?= ($currentUser['profile_visibility'] ?? 'public') === 'public' ? 'selected' : '' ?>>Public</option><option value="unlisted" <?= ($currentUser['profile_visibility'] ?? '') === 'unlisted' ? 'selected' : '' ?>>Unlisted</option><option value="private" <?= ($currentUser['profile_visibility'] ?? '') === 'private' ? 'selected' : '' ?>>Private</option></select>
+        </label>
+        <label class="checkbox">
+            <input type="checkbox" name="is_claimable" value="1" <?= !empty($currentUser['is_claimable']) ? 'checked' : '' ?>>
+            Allow a claim request for this organization profile
         </label>
         <label class="checkbox">
             <input type="checkbox" name="hide_email" value="1" <?= (bool)($currentUser['hide_email'] ?? false) ? 'checked' : '' ?>>

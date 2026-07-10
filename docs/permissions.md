@@ -40,6 +40,12 @@ capabilities are.
 | `backup.manage`        | Trigger and download guarded backups         |
 | `export.manage`        | Export site data                             |
 | `demo.manage`          | Seed optional demo content                   |
+| `content.model.manage` | Manage generic custom field definitions      |
+| `taxonomy.manage`      | Manage reusable taxonomies and terms         |
+| `collection.manage`    | Manage curated content collections           |
+| `webhook.manage`       | Manage opt-in webhook endpoints              |
+| `notification.view`    | View local operational notifications         |
+| `accessibility.view`   | Run the content accessibility checker        |
 
 ## Default grants (seeded by `sql_init/004_capabilities.sql`)
 
@@ -53,6 +59,10 @@ capabilities are.
 - `sql_init/020_starter_subsystems.sql` also grants `listing.manage`,
   `contact.manage`, `system.view`, `backup.manage`, `export.manage`, and
   `demo.manage` to administrators.
+
+`sql_init/022_extensibility_and_operations.sql` grants the content-model,
+taxonomy, collection, webhook, notification, and accessibility capabilities to
+administrators.
 
 > API key access is split: `apikey.own` lets a user create/revoke their **own**
 > keys on `/profile`; `apikey.manage` lets an administrator manage **all** keys

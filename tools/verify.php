@@ -54,7 +54,7 @@ $config = require $root . '/config/config.example.php';
 foreach (['app', 'database', 'security', 'mail', 'rate_limits', 'features'] as $key) {
     $check('config has ' . $key, array_key_exists($key, $config));
 }
-foreach (['articles', 'pages', 'comments', 'media', 'listings', 'contact_forms'] as $feature) {
+foreach (['articles', 'pages', 'comments', 'media', 'listings', 'contact_forms', 'custom_fields', 'relationships', 'taxonomies', 'collections', 'embeds', 'analytics'] as $feature) {
     $check('feature flag ' . $feature, array_key_exists($feature, $config['features']));
 }
 foreach (['login', 'signup', 'api_session', 'contact'] as $limit) {
@@ -64,6 +64,7 @@ foreach (['login', 'signup', 'api_session', 'contact'] as $limit) {
 // Deterministic slug and repository surface checks.
 require_once $root . '/includes/Slug.php';
 require_once $root . '/includes/ListingLinkNormalizer.php';
+require_once $root . '/includes/EmbedProvider.php';
 require_once $root . '/includes/MarkdownRenderer.php';
 $check('slug transliteration', Slug::slugify('Build Your First Subsystem!') === 'build-your-first-subsystem');
 $seen = ['example' => true, 'example-2' => true];
@@ -77,6 +78,14 @@ try {
 } catch (InvalidArgumentException) {
     $check('listing link rejects unsafe schemes', true);
 }
+try {
+    $embed = EmbedProvider::normalize('https://open.spotify.com/track/abc', 'spotify');
+    $check('embed provider normalizes allowlisted source', ($embed['provider'] ?? '') === 'spotify');
+    EmbedProvider::normalize('https://example.com/embed', '');
+    $check('embed provider rejects unknown host', false, 'unknown host accepted');
+} catch (InvalidArgumentException) {
+    $check('embed provider rejects unknown host', true);
+}
 
 foreach ([
     'ArticleRepository' => ['slugExists', 'searchPublished', 'searchAdmin'],
@@ -89,6 +98,14 @@ foreach ([
         $check($class . '::' . $method . ' exists', method_exists($class, $method));
     }
 }
+
+foreach (['ContentExtensionRepository', 'TaxonomyRepository', 'CollectionRepository', 'WebhookRepository', 'NotificationRepository', 'AnalyticsRepository'] as $class) {
+    $check('extension repository file exists ' . $class, is_file($root . '/includes/' . $class . '.php'));
+}
+$check('subsystem scaffold exists', is_file($root . '/tools/make_subsystem.php'));
+$check('OpenAPI generator exists', is_file($root . '/tools/generate_openapi.php'));
+exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($root . '/tools/generate_openapi.php') . ' --check 2>&1', $openApiGeneratorOut, $openApiGeneratorRc);
+$check('OpenAPI generated route inventory is current', $openApiGeneratorRc === 0, $openApiGeneratorRc === 0 ? '' : implode(' ', $openApiGeneratorOut));
 
 // Auth surface check without creating a database connection.
 require_once $root . '/includes/Auth.php';
@@ -117,6 +134,11 @@ foreach (['system.view', 'backup.manage', 'export.manage', 'listing.manage', 'co
     $check('020 grants administrator ' . $cap, str_contains($capSql, "'" . $cap . "'") && str_contains($capSql, "r.name = 'administrator'"));
 }
 $check('004 grants administrator all current capabilities on fresh setup', str_contains($baseCapSql, 'CROSS JOIN capabilities c') && str_contains($baseCapSql, "r.name = 'administrator'"));
+$extensionCapSql = file_get_contents($root . '/sql_init/022_extensibility_and_operations.sql') ?: '';
+foreach (['content.model.manage', 'taxonomy.manage', 'collection.manage', 'webhook.manage', 'notification.view', 'accessibility.view'] as $cap) {
+    $check('022 declares capability ' . $cap, str_contains($extensionCapSql, "'" . $cap . "'"));
+    $check('022 grants administrator ' . $cap, str_contains($extensionCapSql, "'" . $cap . "'") && str_contains($extensionCapSql, "r.name = 'administrator'"));
+}
 
 // Export privacy controls: exports must go through explicit allowlists, and
 // known secret/operational fields must not be in those allowlists.
@@ -267,9 +289,15 @@ function run_optional_db_smoke(string $root, callable $check): void
              INNER JOIN role_capabilities rc ON rc.role_id = r.id
              INNER JOIN capabilities c ON c.id = rc.capability_id
              WHERE r.name = 'administrator'
-               AND c.name IN ('system.view', 'backup.manage', 'export.manage', 'listing.manage', 'contact.manage', 'demo.manage')"
+               AND c.name IN ('system.view', 'backup.manage', 'export.manage', 'listing.manage', 'contact.manage', 'demo.manage',
+                              'content.model.manage', 'taxonomy.manage', 'collection.manage', 'webhook.manage', 'notification.view', 'accessibility.view')"
         )->fetchColumn();
-        $check('DB-backed administrator operations grants', $grantCount === 6, (string)$grantCount);
+        $check('DB-backed administrator operations grants', $grantCount === 12, (string)$grantCount);
+
+        foreach (['content_field_definitions', 'entity_relationships', 'taxonomies', 'external_links', 'content_embeds', 'content_collections', 'webhook_endpoints', 'notifications', 'analytics_events', 'profile_claim_requests'] as $table) {
+            $exists = (bool)$pdo->query("SHOW TABLES LIKE '" . $table . "'")->fetchColumn();
+            $check('DB-backed extension table ' . $table, $exists);
+        }
 
         $listings = new ListingRepository($pdo);
         $listingId = $listings->create([

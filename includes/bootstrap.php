@@ -13,8 +13,21 @@ require_once APP_ROOT . '/includes/InviteCodeRepository.php';
 require_once APP_ROOT . '/includes/MediaRepository.php';
 require_once APP_ROOT . '/includes/MediaUsage.php';
 require_once APP_ROOT . '/includes/ImageProcessor.php';
+require_once APP_ROOT . '/includes/MediaUploadProcessor.php';
 require_once APP_ROOT . '/includes/Slug.php';
 require_once APP_ROOT . '/includes/ListingLinkNormalizer.php';
+require_once APP_ROOT . '/includes/EmbedProvider.php';
+require_once APP_ROOT . '/includes/ModuleRegistry.php';
+require_once APP_ROOT . '/includes/ContentExtensionRepository.php';
+require_once APP_ROOT . '/includes/TaxonomyRepository.php';
+require_once APP_ROOT . '/includes/CollectionRepository.php';
+require_once APP_ROOT . '/includes/NotificationRepository.php';
+require_once APP_ROOT . '/includes/AnalyticsRepository.php';
+require_once APP_ROOT . '/includes/AccessibilityChecker.php';
+require_once APP_ROOT . '/includes/WebhookRepository.php';
+require_once APP_ROOT . '/includes/WebhookDispatcher.php';
+require_once APP_ROOT . '/includes/SitemapRegistry.php';
+require_once APP_ROOT . '/includes/ContentExtensions.php';
 require_once APP_ROOT . '/includes/MarkdownRenderer.php';
 require_once APP_ROOT . '/includes/ArticleRepository.php';
 require_once APP_ROOT . '/includes/PageRepository.php';
@@ -40,6 +53,7 @@ if (!is_file($configPath)) {
 }
 
 $config = require $configPath;
+$modules = new ModuleRegistry(APP_ROOT . '/modules');
 
 // Fail fast on insecure production defaults. Local env (the shipped default)
 // is exempt, so first-run and localhost development are unaffected. This only
@@ -120,6 +134,7 @@ $media = new MediaRepository($pdo);
 $mediaUsage = new MediaUsage($pdo);
 $uploadsRoot = APP_ROOT . '/public_html/uploads';
 $imageProcessor = new ImageProcessor($uploadsRoot);
+$mediaUpload = new MediaUploadProcessor($uploadsRoot, $imageProcessor);
 $articles = new ArticleRepository($pdo);
 $pages = new PageRepository($pdo);
 $listings = new ListingRepository($pdo);
@@ -127,6 +142,15 @@ $comments = new CommentRepository($pdo);
 $contacts = new ContactRepository($pdo);
 $menus = new MenuRepository($pdo);
 $settings = new SettingsRepository($pdo, $config);
+$contentExtensions = new ContentExtensionRepository($pdo);
+$taxonomies = new TaxonomyRepository($pdo);
+$collections = new CollectionRepository($pdo);
+$notifications = new NotificationRepository($pdo);
+$analytics = new AnalyticsRepository($pdo);
+$accessibilityChecker = new AccessibilityChecker($articles, $pages, $listings, $media, $contentExtensions);
+$webhooks = new WebhookRepository($pdo);
+$webhookDispatcher = new WebhookDispatcher($webhooks);
+$sitemapRegistry = new SitemapRegistry($articles, $pages, $listings, $modules);
 $migrations = new MigrationRunner($pdo, APP_ROOT . '/sql_init');
 $revisions = new RevisionRepository($pdo);
 $markdown = new MarkdownRenderer();

@@ -19,7 +19,7 @@ $parentId = $parentId > 0 ? $parentId : null;
 $body = trim((string)($_POST['body'] ?? ''));
 
 $article = $articles->findById($articleId);
-if (!$article || $article['status'] !== 'published') {
+if (!$article || !contentIsPublic($article)) {
     http_response_code(404);
     exit('Article not found.');
 }
@@ -48,6 +48,10 @@ if ($parentId !== null) {
 }
 
 $commentId = $comments->create($articleId, (int)$currentUser['id'], $parentId, $body, $status);
+if ($status === 'pending') {
+    $notifications->create(null, 'comment.pending', 'Comment awaiting moderation', '', '/admin/comments');
+    $webhookDispatcher->dispatch('comment.pending', ['comment_id' => $commentId, 'article_id' => $articleId, 'status' => $status]);
+}
 
 $_SESSION['comment_notice'] = $status === 'pending'
     ? 'Your comment is awaiting moderation.'

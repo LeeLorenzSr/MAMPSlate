@@ -11,9 +11,7 @@ $currentUser = $auth->user();
 $slug = (string)($_GET['slug'] ?? '');
 $article = $slug !== '' ? $articles->findBySlug($slug) : null;
 
-if (!$article || $article['status'] !== 'published'
-    || $article['published_at'] === null
-    || strtotime($article['published_at']) > time()) {
+if (!$article || !contentIsPublic($article)) {
     http_response_code(404);
     renderHeader('Not found', $currentUser);
     echo '<p>The article you were looking for is not available.</p>';
@@ -125,6 +123,7 @@ renderHeader(
 
     <div class="article-body">
         <?= $article['body_html'] ?>
+        <?php renderPublicContentExtensions('article', (int)$article['id']); ?>
     </div>
 
     <?php if ($tags): ?>
