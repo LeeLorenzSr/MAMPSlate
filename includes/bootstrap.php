@@ -25,6 +25,7 @@ require_once APP_ROOT . '/includes/NotificationRepository.php';
 require_once APP_ROOT . '/includes/AnalyticsRepository.php';
 require_once APP_ROOT . '/includes/AccessibilityChecker.php';
 require_once APP_ROOT . '/includes/WebhookRepository.php';
+require_once APP_ROOT . '/includes/WebhookTargetValidator.php';
 require_once APP_ROOT . '/includes/WebhookDispatcher.php';
 require_once APP_ROOT . '/includes/SitemapRegistry.php';
 require_once APP_ROOT . '/includes/ContentExtensions.php';

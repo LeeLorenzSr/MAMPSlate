@@ -66,6 +66,7 @@ require_once $root . '/includes/Slug.php';
 require_once $root . '/includes/ListingLinkNormalizer.php';
 require_once $root . '/includes/EmbedProvider.php';
 require_once $root . '/includes/MarkdownRenderer.php';
+require_once $root . '/includes/WebhookTargetValidator.php';
 $check('slug transliteration', Slug::slugify('Build Your First Subsystem!') === 'build-your-first-subsystem');
 $seen = ['example' => true, 'example-2' => true];
 $unique = Slug::ensureUnique(fn($slug) => isset($seen[$slug]), 'example');
@@ -78,6 +79,12 @@ try {
 } catch (InvalidArgumentException) {
     $check('listing link rejects unsafe schemes', true);
 }
+$check('webhook target accepts public IPv4', WebhookTargetValidator::isPublicIp('8.8.8.8'));
+foreach (['127.0.0.1', '10.0.0.1', '169.254.169.254', '192.168.1.1', '::1', 'fc00::1'] as $address) {
+    $check('webhook target rejects non-public IP ' . $address, !WebhookTargetValidator::isPublicIp($address));
+}
+$apiAuthSource = file_get_contents($root . '/includes/ApiAuth.php') ?: '';
+$check('API bearer auth rejects inactive users', str_contains($apiAuthSource, 'activeUser') && str_contains($apiAuthSource, "(bool)\$user['is_active']"));
 try {
     $embed = EmbedProvider::normalize('https://open.spotify.com/track/abc', 'spotify');
     $check('embed provider normalizes allowlisted source', ($embed['provider'] ?? '') === 'spotify');

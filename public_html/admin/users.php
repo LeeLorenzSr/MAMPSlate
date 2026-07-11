@@ -19,8 +19,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $roleId = (int)($_POST['role_id'] ?? 0);
             $password = (string)($_POST['password'] ?? '');
 
-            if ($email === '' || $displayName === '' || $roleId <= 0 || strlen($password) < 8) {
-                throw new RuntimeException('Provide email, display name, role, and a password of at least 8 characters.');
+            if ($email === '' || $displayName === '' || $roleId <= 0 || strlen($password) < Auth::MIN_PASSWORD_LENGTH) {
+                throw new RuntimeException('Provide email, display name, role, and a password of at least ' . Auth::MIN_PASSWORD_LENGTH . ' characters.');
             }
 
             $newUserId = $users->createUser($email, $displayName, $roleId, $password);
@@ -43,8 +43,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 
             $newPassword = (string)($_POST['new_password'] ?? '');
             if ($newPassword !== '') {
-                if (strlen($newPassword) < 8) {
-                    throw new RuntimeException('New passwords must be at least 8 characters.');
+                if (strlen($newPassword) < Auth::MIN_PASSWORD_LENGTH) {
+                    throw new RuntimeException('New passwords must be at least ' . Auth::MIN_PASSWORD_LENGTH . ' characters.');
                 }
                 $users->setPassword($userId, $newPassword);
                 $audit->log('user.password.reset', (int)$currentUser['id'], 'user', (string)$userId);
@@ -102,7 +102,7 @@ renderHeader('User management', $currentUser);
         </label>
         <label>
             Temporary password
-            <input type="password" name="password" required minlength="8">
+            <input type="password" name="password" required minlength="<?= Auth::MIN_PASSWORD_LENGTH ?>">
         </label>
         <button type="submit">Create user</button>
     </form>
@@ -150,7 +150,7 @@ renderHeader('User management', $currentUser);
                         </label>
                     </td>
                     <td>
-                        <input form="<?= e($formId) ?>" type="password" name="new_password" minlength="8" autocomplete="new-password" placeholder="Leave unchanged">
+                        <input form="<?= e($formId) ?>" type="password" name="new_password" minlength="<?= Auth::MIN_PASSWORD_LENGTH ?>" autocomplete="new-password" placeholder="Leave unchanged">
                     </td>
                     <td><?= e($managedUser['created_at']) ?></td>
                     <td>

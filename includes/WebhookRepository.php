@@ -22,9 +22,7 @@ final class WebhookRepository
             throw new InvalidArgumentException('Webhook name and supported event are required.');
         }
         $targetUrl = ListingLinkNormalizer::normalizeUrl((string)($data['target_url'] ?? ''));
-        if (parse_url($targetUrl, PHP_URL_SCHEME) !== 'https') {
-            throw new InvalidArgumentException('Webhooks require an HTTPS endpoint.');
-        }
+        WebhookTargetValidator::resolve($targetUrl);
         $secret = trim((string)($data['signing_secret'] ?? ''));
         if ($secret === '') {
             $secret = bin2hex(random_bytes(24));

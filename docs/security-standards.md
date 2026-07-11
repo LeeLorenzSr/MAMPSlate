@@ -33,6 +33,17 @@
 - Support revocation with `revoked_at`.
 - Track last-used timestamp and source IP where possible.
 - Scope API keys with roles or explicit capabilities before adding sensitive API endpoints.
+- Deactivating an account immediately blocks its API keys and temporal session
+  keys, even when the individual credential has not expired or been revoked.
+
+## Outbound webhooks
+
+- Webhooks accept HTTPS URLs only, reject embedded URL credentials, and require
+  every resolved address to be public (no loopback, private, link-local, or
+  reserved networks).
+- Targets are resolved again at delivery time and the validated public address
+  is pinned for the cURL connection, limiting DNS-rebinding and internal-network
+  SSRF. Redirects remain disabled.
 
 ## Authorization
 

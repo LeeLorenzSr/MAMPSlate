@@ -26,11 +26,18 @@ final class WebhookDispatcher
             return;
         }
         foreach ($this->webhooks->activeForEvent($eventName) as $endpoint) {
-            $curl = curl_init((string)$endpoint['target_url']);
+            $targetUrl = (string)$endpoint['target_url'];
+            try {
+                $target = WebhookTargetValidator::resolve($targetUrl);
+            } catch (InvalidArgumentException $e) {
+                $this->webhooks->recordDelivery((int)$endpoint['id'], $eventName, null, $e->getMessage());
+                continue;
+            }
+            $curl = curl_init($targetUrl);
             if ($curl === false) {
                 continue;
             }
-            curl_setopt_array($curl, [
+            $options = [
                 CURLOPT_POST => true,
                 CURLOPT_POSTFIELDS => $payload,
                 CURLOPT_HTTPHEADER => [
@@ -42,7 +49,15 @@ final class WebhookDispatcher
                 CURLOPT_TIMEOUT => 4,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_FOLLOWLOCATION => false,
-            ]);
+                CURLOPT_RESOLVE => [
+                    $target['host'] . ':' . $target['port'] . ':'
+                        . (str_contains($target['addresses'][0], ':') ? '[' . $target['addresses'][0] . ']' : $target['addresses'][0]),
+                ],
+            ];
+            if (defined('CURLOPT_PROTOCOLS') && defined('CURLPROTO_HTTPS')) {
+                $options[CURLOPT_PROTOCOLS] = CURLPROTO_HTTPS;
+            }
+            curl_setopt_array($curl, $options);
             curl_exec($curl);
             $status = (int)curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
             $error = curl_error($curl);

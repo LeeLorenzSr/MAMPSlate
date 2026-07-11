@@ -43,6 +43,12 @@ short response/error summary are recorded for operators. Contact payloads avoid
 the submitter's message and email. `/admin/notifications` provides a local
 read/unread activity feed for these events.
 
+Webhook hosts must resolve entirely to public IP addresses. Loopback, private,
+link-local, reserved, unresolvable, and credential-bearing URLs are rejected at
+creation; DNS is checked again and pinned at delivery time. If a previously
+valid host later resolves to a blocked address, delivery is refused and the
+reason appears in the endpoint's delivery status.
+
 ## Analytics and accessibility
 
 The analytics hook records aggregate `outbound_click` events only: it excludes

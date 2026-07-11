@@ -485,7 +485,7 @@ $baseUrl = detect_base_url();
 
         <section class="panel setup-step">
             <h2>3. Initialize schema</h2>
-            <p class="muted">Run the migration scripts (<code>001</code>–<code>021</code>) against the database. This is safe to re-run.</p>
+            <p class="muted">Run the migration scripts (<code>001</code>–<code>022</code>) against the database. This is safe to re-run.</p>
             <form method="post">
                 <input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
                 <input type="hidden" name="db_host" value="<?= e($db['host']) ?>">

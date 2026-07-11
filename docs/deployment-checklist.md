@@ -52,6 +52,8 @@ For local development only, run `sql_init/000_reset_dev.sql` before the schema s
 - If using MCP for AI management: set `mcp.enabled` in `config.local.php`, create a dedicated AI user + API key, and review `mcp.dry_run`/`allow_publish`/`allow_delete`. See [mcp-ai-management.md](mcp-ai-management.md). Leave `mcp.enabled=false` otherwise.
 - Configure OAuth providers in `config.local.php` if federated login is used (see `docs/oauth-setup.md`).
 - Toggle unused subsystems off in the `features` block.
+- If webhooks are enabled, verify the host can resolve approved external
+  endpoints; private/internal targets are intentionally rejected.
 - Keep `config/config.local.php` out of version control.
 - Verify login works.
 - Verify administrator user management is protected.

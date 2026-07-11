@@ -86,7 +86,7 @@ final class ApiAuth
         $this->pdo->prepare('UPDATE api_keys SET last_used_at = CURRENT_TIMESTAMP WHERE id = :id')
             ->execute(['id' => (int)$row['api_key_id']]);
 
-        return $this->users->findById((int)$row['user_id']);
+        return $this->activeUser((int)$row['user_id']);
     }
 
     private function authenticateSessionKey(string $sessionKey): ?array
@@ -107,6 +107,12 @@ final class ApiAuth
         $this->pdo->prepare('UPDATE user_sessions SET last_used_at = CURRENT_TIMESTAMP WHERE id = :id')
             ->execute(['id' => (int)$row['session_id']]);
 
-        return $this->users->findById((int)$row['user_id']);
+        return $this->activeUser((int)$row['user_id']);
+    }
+
+    private function activeUser(int $userId): ?array
+    {
+        $user = $this->users->findById($userId);
+        return $user && (bool)$user['is_active'] ? $user : null;
     }
 }
