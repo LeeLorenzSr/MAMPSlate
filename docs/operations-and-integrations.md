@@ -23,7 +23,9 @@ operator responsibility and is intentionally not collected by the CMS.
 Images remain enabled with `media`. Enable `media_documents`, `media_audio`, or
 `media_video` only when needed. Supported non-image types are PDF/TXT/DOC/DOCX,
 common MP3/OGG/WAV/M4A/FLAC audio, and MP4/WebM/Ogg video. Files are validated
-with `finfo`; browser previews are provided for audio/video and direct links for
+with PHP's `fileinfo` extension; if that extension is missing, image uploads
+continue to work but document/audio/video uploads are rejected until it is
+enabled. Browser previews are provided for audio/video and direct links for
 documents.
 
 ## Webhooks and notifications

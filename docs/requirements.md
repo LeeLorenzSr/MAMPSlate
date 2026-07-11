@@ -27,6 +27,7 @@ optional modules are needed only when the corresponding feature is enabled.
 | Extension  | When needed                                            |
 |------------|--------------------------------------------------------|
 | `gd`       | The **media** feature (`includes/ImageProcessor.php`) — image upload validation, resizing, and thumbnailing. Requires JPEG, PNG, GIF, and WebP support compiled into GD. Disable the `media` feature to drop this dependency. |
+| `fileinfo` | Optional non-image media uploads (`media_documents`, `media_audio`, or `media_video`) — MIME validation for documents, audio, and video. Image uploads do not require this extension. |
 | `curl`     | OAuth login (`includes/OAuthClient.php`) — token exchange and userinfo requests to Google/GitHub. Only required when at least one OAuth provider is enabled. |
 | `intl`     | Recommended for slug generation (`includes/Slug.php`) — `transliterator_transliterate` strips accents to ASCII. `Slug::slugify()` falls back to a simpler transliteration if `intl` is absent, so it is optional but recommended for non-ASCII titles. |
 
@@ -39,7 +40,8 @@ php -m
 ```
 
 Or via a `phpinfo()` page in `public_html/`. Confirm at least: `pdo_mysql`,
-`mbstring`, `gd` (if using media), `curl` (if using OAuth).
+`mbstring`, `gd` (if using media), `fileinfo` (if using document/audio/video
+uploads), `curl` (if using OAuth).
 
 ## Web server
 

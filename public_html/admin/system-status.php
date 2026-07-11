@@ -11,9 +11,17 @@ $add = static function (string $label, bool $ok, string $detail) use (&$checks):
     $checks[] = ['label' => $label, 'ok' => $ok, 'detail' => $detail];
 };
 
-foreach (['pdo_mysql', 'mbstring', 'json', 'fileinfo', 'gd', 'openssl'] as $ext) {
+$nonImageMediaEnabled = feature('media_documents') || feature('media_audio') || feature('media_video');
+
+foreach (['pdo_mysql', 'mbstring', 'json', 'gd', 'openssl'] as $ext) {
     $add('PHP extension: ' . $ext, extension_loaded($ext), extension_loaded($ext) ? 'loaded' : 'missing');
 }
+$fileinfoLoaded = extension_loaded('fileinfo');
+$add(
+    'PHP extension: fileinfo',
+    $fileinfoLoaded || !$nonImageMediaEnabled,
+    $fileinfoLoaded ? 'loaded' : ($nonImageMediaEnabled ? 'missing' : 'missing; optional media disabled')
+);
 
 foreach ([
     'cache' => APP_ROOT . '/cache',

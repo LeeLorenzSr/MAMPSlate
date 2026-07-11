@@ -13,10 +13,18 @@ final class MediaUploadProcessor
         if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file((string)($file['tmp_name'] ?? ''))) {
             throw new RuntimeException('The upload did not complete.');
         }
-        $mime = (new finfo(FILEINFO_MIME_TYPE))->file((string)$file['tmp_name']) ?: '';
-        if (str_starts_with($mime, 'image/')) {
+
+        $tmpPath = (string)$file['tmp_name'];
+        $imageInfo = @getimagesize($tmpPath);
+        if ($imageInfo !== false && str_starts_with((string)($imageInfo['mime'] ?? ''), 'image/')) {
             return $this->images->processUpload($file, $maxImageWidth);
         }
+
+        if (!class_exists('finfo')) {
+            throw new RuntimeException('Non-image uploads require the PHP fileinfo extension.');
+        }
+
+        $mime = (new finfo(FILEINFO_MIME_TYPE))->file($tmpPath) ?: '';
         $feature = $this->featureForMime($mime);
         if ($feature === null || !feature($feature)) {
             throw new RuntimeException('This file type is disabled or not supported.');
